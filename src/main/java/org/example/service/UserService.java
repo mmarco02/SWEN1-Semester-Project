@@ -1,6 +1,8 @@
 package org.example.service;
 
 import org.example.domain.User;
+import org.example.domain.UserProfile;
+import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
@@ -15,14 +17,17 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final UserProfileRepository userProfileRepository;
+
     // In-memory token storage (in production, use Redis or database)
     private final Map<String, TokenInfo> activeTokens = new ConcurrentHashMap<>();
 
     // Token expiration time (24 hours)
     private static final long TOKEN_EXPIRATION_HOURS = 24;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     public void registerUser(User user) {
@@ -31,6 +36,14 @@ public class UserService {
             user.setPassword(hashResult.hash());
             user.setSalt(hashResult.salt());
             userRepository.save(user);
+
+            UserProfile userProfile = UserProfile.builder()
+                    .userId(user.getId())
+                    .email("")
+                    .favouriteGenre("")
+                    .build();
+
+            userProfileRepository.save(userProfile);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Hashing algorithm not available", e);
         }
@@ -71,13 +84,11 @@ public class UserService {
             return Optional.empty();
         }
 
-        // Check if token is expired
         if (tokenInfo.expiresAt().isBefore(Instant.now())) {
             activeTokens.remove(token);
             return Optional.empty();
         }
 
-        // Get user from database
         return userRepository.findById(tokenInfo.userId());
     }
 
@@ -87,28 +98,24 @@ public class UserService {
             return false;
         }
 
-        // Check if token is expired
         if (tokenInfo.expiresAt().isBefore(Instant.now())) {
             activeTokens.remove(token);
             return false;
         }
 
-        // Check if token belongs to the requested username
-        // This ensures users can only access their own resources
         return tokenInfo.username().equals(username);
     }
 
-    public Optional<User> getUserProfile(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<UserProfile> getUserProfileById(int userId) {
+        return userProfileRepository.findByUserId(userId);
     }
 
     private String generateToken(String username) {
-        // Generate token in format: "username-randomUUID"
+        // generate token in format: "username-randomUUID"
         String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         return username + "-" + uuid + "Token";
     }
 
-    // Clean up expired tokens (call this periodically)
     public void cleanupExpiredTokens() {
         Instant now = Instant.now();
         activeTokens.entrySet().removeIf(entry -> entry.getValue().expiresAt().isBefore(now));

@@ -11,5 +11,7 @@ import java.sql.SQLException;
 public class Main {
     static void main() throws NoSuchAlgorithmException, SQLException, IOException {
         DatabaseConnection.initDatabase();
+
+        Server.run();
     }
 }

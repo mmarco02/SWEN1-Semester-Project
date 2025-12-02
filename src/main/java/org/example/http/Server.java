@@ -4,7 +4,9 @@ import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.User;
+import org.example.domain.UserProfile;
 import org.example.persistence.DatabaseConnection;
+import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 import org.example.service.HashUtils;
 import org.example.service.UserService;
@@ -12,12 +14,11 @@ import org.example.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -28,7 +29,10 @@ import static org.example.service.HttpUtils.sendResponse;
 public class Server {
     private HttpServer server;
     private final int port;
-    private final UserService userService = new UserService(new UserRepository(DatabaseConnection.getConnection()));
+    private final UserService userService = new UserService(
+            new UserRepository(DatabaseConnection.getConnection()),
+            new UserProfileRepository(DatabaseConnection.getConnection())
+    );
 
     public Server(int port) throws SQLException {
         this.port = port;
@@ -167,13 +171,14 @@ public class Server {
         public void handle(HttpExchange exchange, int userId) throws IOException {
             switch (exchange.getRequestMethod()) {
                 case "GET":
-                    User user = userService.getById(userId);
-                    System.out.println(user);
-                    if(user == null) {
+                    Optional<UserProfile> userProfile = userService.getUserProfileById(userId);
+                    UserProfile userProfileObj = userProfile.orElse(null);
+                    System.out.println(userProfileObj);
+                    if(userProfileObj == null) {
                         sendResponse(exchange, 404, "Not Found", "text/plain");
                         return;
                     }
-                    String response = user.toJson();
+                    String response = userProfileObj.toJson();
                     System.out.println(response);
                     sendResponse(exchange, 200, response, "application/json");
                     break;
@@ -228,7 +233,7 @@ public class Server {
         }
     }
 
-    public static void main(String[] args) throws IOException, SQLException {
+    public static void run() throws SQLException, IOException {
         Server server = new Server(8080);
         server.start();
 
@@ -237,5 +242,4 @@ public class Server {
 
         System.out.println("Press Ctrl+C to stop the server...");
     }
-
 }

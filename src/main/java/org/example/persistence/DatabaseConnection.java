@@ -19,7 +19,7 @@ public class DatabaseConnection {
 
         try {
             String initStatement = getSQLInitString();
-            System.out.println(initStatement);
+            //System.out.println(initStatement);
             assert conn != null;
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(initStatement);
