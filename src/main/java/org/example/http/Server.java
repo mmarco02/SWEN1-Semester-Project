@@ -89,16 +89,12 @@ public class Server {
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
                 String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                //System.out.println("Registration data: " + requestBody);
 
                 Map<String, String> requestData = null;
                 try {
                     requestData = mapper.readValue(requestBody, Map.class);
                     String username = requestData.get("username");
                     String password = requestData.get("password");
-
-                    //System.out.println("Username: " + username);
-                    //System.out.println("Password: " + password);
 
                     User user = User.builder()
                             .username(username)
@@ -110,8 +106,6 @@ public class Server {
                     String response = "{\"message\": \"User registered\"}";
                     sendResponse(exchange, 201, response, "application/json");
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    System.out.println(e.getStackTrace());
                     String response = "{\"error\": \"Invalid JSON format\"}";
                     sendResponse(exchange, 400, response, "application/json");
                 }
@@ -131,8 +125,7 @@ public class Server {
             if ("POST".equals(exchange.getRequestMethod())) {
                 try {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                    Map<String, String> requestData = null;
-                    requestData = mapper.readValue(requestBody, Map.class);
+                    Map<String, String> requestData = mapper.readValue(requestBody, Map.class);
                     String username = requestData.get("username");
                     String password = requestData.get("password");
 

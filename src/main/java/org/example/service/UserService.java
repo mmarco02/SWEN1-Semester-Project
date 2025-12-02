@@ -136,7 +136,7 @@ public class UserService {
         UserProfile userProfile = existingProfile.get();
         boolean isUpdated = false;
 
-        if (email != null && !email.trim().isEmpty()) {
+        if (email != null) {
             userProfile.setEmail(email.trim());
             isUpdated = true;
         }

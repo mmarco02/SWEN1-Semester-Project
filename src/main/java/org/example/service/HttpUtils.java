@@ -6,9 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
 public class HttpUtils {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
