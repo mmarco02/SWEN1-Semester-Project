@@ -168,6 +168,8 @@ public class Server {
 
 
     class UserProfileHandler {
+        private final ObjectMapper mapper = new ObjectMapper();
+
         public void handle(HttpExchange exchange, int userId) throws IOException {
             switch (exchange.getRequestMethod()) {
                 case "GET":
@@ -186,6 +188,17 @@ public class Server {
                 case "PUT":
                     String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                     System.out.println("Update profile for user " + userId + ": " + requestBody);
+                    Optional<UserProfile> userProfileToUpdate = userService.getUserProfileById(userId);
+                    UserProfile userProfileToUpdateObj = userProfileToUpdate.orElse(null);
+                    if(userProfileToUpdateObj == null) {
+                        sendResponse(exchange, 404, "Not Found", "text/plain");
+                        return;
+                    }
+                    Map<String, String> requestValues = mapper.readValue(requestBody, Map.class);
+                    String email = requestValues.get("email");
+                    String favoriteGenre = requestValues.get("favoriteGenre");
+
+                    userService.updateUserProfile(userProfileToUpdateObj.getUserId(), email, favoriteGenre);
 
                     String updateResponse = String.format("""
                             {

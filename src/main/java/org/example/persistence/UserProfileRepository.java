@@ -17,11 +17,11 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
 
     @Override
     public void save(UserProfile userProfile) {
-        String sql = "INSERT INTO UserProfiles (Profile_User_ID, Email, FavouriteGenre) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO UserProfiles (Profile_User_ID, Email, FavoriteGenre) VALUES (?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, userProfile.getUserId());
             statement.setString(2, userProfile.getEmail());
-            statement.setString(3, userProfile.getFavouriteGenre());
+            statement.setString(3, userProfile.getFavoriteGenre());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -38,7 +38,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
                 UserProfile userProfile = UserProfile.builder()
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
-                        .favouriteGenre(rs.getString("FavouriteGenre"))
+                        .favoriteGenre(rs.getString("FavoriteGenre"))
                         .build();
                 return Optional.of(userProfile);
             }
@@ -57,7 +57,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
                 UserProfile userProfile = UserProfile.builder()
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
-                        .favouriteGenre(rs.getString("FavouriteGenre"))
+                        .favoriteGenre(rs.getString("FavoriteGenre"))
                         .build();
                 return Optional.of(userProfile);
             }
@@ -78,7 +78,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
                 UserProfile userProfile = UserProfile.builder()
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
-                        .favouriteGenre(rs.getString("FavouriteGenre"))
+                        .favoriteGenre(rs.getString("FavoriteGenre"))
                         .build();
                 return Optional.of(userProfile);
             }
@@ -98,7 +98,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
                 UserProfile userProfile = UserProfile.builder()
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
-                        .favouriteGenre(rs.getString("FavouriteGenre"))
+                        .favoriteGenre(rs.getString("FavoriteGenre"))
                         .build();
                 userProfiles.add(userProfile);
             }
@@ -123,6 +123,30 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
     public void deleteAll() {
         String sql = "DELETE FROM UserProfiles";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void update(UserProfile userProfile) {
+        String sql = "UPDATE UserProfiles SET Email = ?, FavoriteGenre = ? WHERE Profile_User_ID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, userProfile.getEmail());
+            statement.setString(2, userProfile.getFavoriteGenre());
+            statement.setInt(3, userProfile.getUserId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateById(UserProfile userProfile) {
+        String sql = "UPDATE UserProfiles SET Email = ?, FavoriteGenre = ? WHERE Profile_ID = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, userProfile.getEmail());
+            statement.setString(2, userProfile.getFavoriteGenre());
+            statement.setInt(3, userProfile.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -36,7 +36,7 @@ public class UserService {
             UserProfile userProfile = UserProfile.builder()
                     .userId(user.getId())
                     .email("")
-                    .favouriteGenre("")
+                    .favoriteGenre("")
                     .build();
 
             userProfileRepository.save(userProfile);
@@ -124,6 +124,34 @@ public class UserService {
     public User getById(int userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         return  optionalUser.orElse(null);
+    }
+
+    public Optional<UserProfile> updateUserProfile(int userId, String email, String favoriteGenre) {
+        Optional<UserProfile> existingProfile = userProfileRepository.findByUserId(userId);
+
+        if (existingProfile.isEmpty()) {
+            return Optional.empty();
+        }
+
+        UserProfile userProfile = existingProfile.get();
+        boolean isUpdated = false;
+
+        if (email != null && !email.trim().isEmpty()) {
+            userProfile.setEmail(email.trim());
+            isUpdated = true;
+        }
+
+        if (favoriteGenre != null) {
+            userProfile.setFavoriteGenre(favoriteGenre);
+            isUpdated = true;
+        }
+
+        if (isUpdated) {
+            userProfileRepository.update(userProfile);
+            return Optional.of(userProfile);
+        }
+
+        return Optional.of(userProfile);
     }
 
     private record TokenInfo(int userId, String username, Instant expiresAt) {}

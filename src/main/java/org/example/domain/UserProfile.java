@@ -1,14 +1,10 @@
 package org.example.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 public class UserProfile extends JsonObject {
     private int id;
     private int userId;
     private String email;
-    private String favouriteGenre;
+    private String favoriteGenre;
 
     public UserProfile() {
     }
@@ -37,12 +33,12 @@ public class UserProfile extends JsonObject {
         this.email = email;
     }
 
-    public String getFavouriteGenre() {
-        return favouriteGenre;
+    public String getFavoriteGenre() {
+        return favoriteGenre;
     }
 
-    public void setFavouriteGenre(String favouriteGenre) {
-        this.favouriteGenre = favouriteGenre;
+    public void setFavoriteGenre(String favoriteGenre) {
+        this.favoriteGenre = favoriteGenre;
     }
 
     @Override
@@ -51,7 +47,7 @@ public class UserProfile extends JsonObject {
                 "id=" + id +
                 ", userId=" + userId +
                 ", email='" + email + '\'' +
-                ", favouriteGenre='" + favouriteGenre + '\'' +
+                ", favoriteGenre='" + favoriteGenre + '\'' +
                 '}';
     }
 
@@ -77,8 +73,8 @@ public class UserProfile extends JsonObject {
             return this;
         }
 
-        public UserProfileBuilder favouriteGenre(String favouriteGenre) {
-            userProfile.favouriteGenre = favouriteGenre;
+        public UserProfileBuilder favoriteGenre(String favoriteGenre) {
+            userProfile.favoriteGenre = favoriteGenre;
             return this;
         }
 

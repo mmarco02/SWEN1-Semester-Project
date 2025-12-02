@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Users (
 CREATE TABLE IF NOT EXISTS UserProfiles (
     Profile_ID SERIAL PRIMARY KEY,
     Email VARCHAR(256),
-    FavouriteGenre VARCHAR(256),
+    FavoriteGenre VARCHAR(256),
     Profile_User_ID INT NOT NULL,
     FOREIGN KEY (Profile_User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
 )
