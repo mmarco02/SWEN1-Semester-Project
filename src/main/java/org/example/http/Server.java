@@ -121,7 +121,7 @@ public class Server {
         }
     }
 
-    // User Login Handler
+
     class UserLoginHandler implements HttpHandler {
         private final ObjectMapper mapper = new ObjectMapper();
 
@@ -166,7 +166,7 @@ public class Server {
         }
     }
 
-    // User Profile Handler with path variable support
+
     class UserProfileHandler {
         public void handle(HttpExchange exchange, int userId) throws IOException {
             switch (exchange.getRequestMethod()) {
@@ -202,7 +202,7 @@ public class Server {
         }
     }
 
-    // User Ratings Handler
+
     static class UserRatingsHandler {
         public void handle(HttpExchange exchange, int userId) throws IOException {
             if ("GET".equals(exchange.getRequestMethod())) {
@@ -214,7 +214,7 @@ public class Server {
         }
     }
 
-    // User Favorites Handler
+
     static class UserFavoritesHandler {
         public void handle(HttpExchange exchange, int userId) throws IOException {
             if ("GET".equals(exchange.getRequestMethod())) {
@@ -237,7 +237,6 @@ public class Server {
         Server server = new Server(8080);
         server.start();
 
-        // Add shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
 
         System.out.println("Press Ctrl+C to stop the server...");
