@@ -18,11 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final UserProfileRepository userProfileRepository;
-
-    // In-memory token storage (in production, use Redis or database)
     private final Map<String, TokenInfo> activeTokens = new ConcurrentHashMap<>();
-
-    // Token expiration time (24 hours)
     private static final long TOKEN_EXPIRATION_HOURS = 24;
 
     public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
@@ -62,7 +58,6 @@ public class UserService {
                 return Optional.empty();
             }
 
-            // token generation
             String token = generateToken(username);
             TokenInfo tokenInfo = new TokenInfo(user.getId(), username, Instant.now().plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS));
             activeTokens.put(token, tokenInfo);
@@ -131,6 +126,5 @@ public class UserService {
         return  optionalUser.orElse(null);
     }
 
-    // Token information record
     private record TokenInfo(int userId, String username, Instant expiresAt) {}
 }
