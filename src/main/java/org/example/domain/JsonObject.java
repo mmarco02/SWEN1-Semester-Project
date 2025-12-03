@@ -8,7 +8,7 @@ public class JsonObject {
     public String toJson() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
         String json = ow.writeValueAsString(this);
         return json;
     }

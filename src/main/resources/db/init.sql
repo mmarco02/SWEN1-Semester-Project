@@ -14,4 +14,14 @@ CREATE TABLE IF NOT EXISTS UserProfiles (
     FavoriteGenre VARCHAR(256),
     Profile_User_ID INT NOT NULL,
     FOREIGN KEY (Profile_User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
-)
+);
+
+CREATE TABLE UserTokens (
+    Token VARCHAR(255) PRIMARY KEY,
+    User_ID INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_tokens_token ON UserTokens(token);
+CREATE INDEX idx_tokens_user_id ON UserTokens(user_id);

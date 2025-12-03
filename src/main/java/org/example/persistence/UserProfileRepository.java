@@ -36,6 +36,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 UserProfile userProfile = UserProfile.builder()
+                        .id(rs.getInt("Profile_ID"))
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
                         .favoriteGenre(rs.getString("FavoriteGenre"))
@@ -55,6 +56,7 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 UserProfile userProfile = UserProfile.builder()
+                        .id(rs.getInt("Profile_ID"))
                         .userId(rs.getInt("Profile_User_ID"))
                         .email(rs.getString("Email"))
                         .favoriteGenre(rs.getString("FavoriteGenre"))
