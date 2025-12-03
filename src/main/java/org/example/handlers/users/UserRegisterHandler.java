@@ -3,6 +3,7 @@ package org.example.handlers.users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.User;
+import org.example.http.HttpStatus;
 import org.example.persistence.DatabaseConnection;
 import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
@@ -44,7 +45,7 @@ public class UserRegisterHandler {
 
                 User existingUser = userService.getUserByUsername(username);
                 if (existingUser != null) {
-                    sendResponse(exchange, 409, "Username already exists", "text/plain");
+                    sendResponse(exchange, HttpStatus.CONFLICT.getCode(), "Username already exists", "text/plain");
                     return;
                 }
 
@@ -56,13 +57,13 @@ public class UserRegisterHandler {
                 userService.registerUser(user);
 
                 String response = "{\"message\": \"User registered\"}";
-                sendResponse(exchange, 201, response, "application/json");
+                sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
             } catch (Exception e) {
                 String response = "{\"error\": \"Invalid JSON format\"}";
-                sendResponse(exchange, 400, response, "application/json");
+                sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(), response, "application/json");
             }
         } else {
-            sendResponse(exchange, 405, "Method Not Allowed", "text/plain");
+            sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(), HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
         }
     }
 }

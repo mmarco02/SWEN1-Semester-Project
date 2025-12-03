@@ -3,6 +3,7 @@ package org.example.handlers.users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.UserProfile;
+import org.example.http.HttpStatus;
 import org.example.persistence.DatabaseConnection;
 import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
@@ -41,7 +42,7 @@ public class UserProfileHandler {
                 UserProfile userProfileObj = userProfile.orElse(null);
                 System.out.println(userProfileObj);
                 if(userProfileObj == null) {
-                    sendResponse(exchange, 404, "Not Found", "text/plain");
+                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), "Not Found", "text/plain");
                     return;
                 }
                 String response = userProfileObj.toJson();
@@ -55,7 +56,7 @@ public class UserProfileHandler {
                 Optional<UserProfile> userProfileToUpdate = userService.getUserProfileById(userId);
                 UserProfile userProfileToUpdateObj = userProfileToUpdate.orElse(null);
                 if(userProfileToUpdateObj == null) {
-                    sendResponse(exchange, 404, "Not Found", "text/plain");
+                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), "Not Found", "text/plain");
                     return;
                 }
                 Map<String, String> requestValues = mapper.readValue(requestBody, Map.class);
@@ -70,11 +71,11 @@ public class UserProfileHandler {
                                 "userId": "%s"
                             }
                             """, userId);
-                sendResponse(exchange, 200, updateResponse, "application/json");
+                sendResponse(exchange, HttpStatus.OK.getCode(), updateResponse, "application/json");
                 break;
 
             default:
-                sendResponse(exchange, 405, "Method Not Allowed", "text/plain");
+                sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(), HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
         }
     }
 }

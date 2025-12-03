@@ -3,6 +3,7 @@ package org.example.handlers.users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.User;
+import org.example.http.HttpStatus;
 import org.example.persistence.DatabaseConnection;
 import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
@@ -43,7 +44,7 @@ public class UserLoginHandler {
 
             User user = userService.getUserByUsername(username);
             if (user == null) {
-                sendResponse(exchange, 401, "Invalid credentials", "text/plain");
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(), "Invalid credentials", "text/plain");
                 return;
             }
 
@@ -52,15 +53,15 @@ public class UserLoginHandler {
             String errorResponse = "{\"message\": \"Login failed\"}";
 
             if (token == null || token.isEmpty()) {
-                sendResponse(exchange, 401, errorResponse, "text/plain");
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(), errorResponse, "text/plain");
                 return;
             }
 
             String response = "{\"message\": \"Login successful\" , \"token\": \"" + token + "\"}";
 
-            sendResponse(exchange, 200, response, "application/json");
+            sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
         } else {
-            sendResponse(exchange, 405, "Method Not Allowed", "text/plain");
+            sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(), HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
         }
     }
 }

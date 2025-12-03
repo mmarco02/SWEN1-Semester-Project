@@ -1,6 +1,7 @@
 package org.example.handlers.users;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.example.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -30,7 +31,7 @@ public class UserHandler {
             int userId = Integer.parseInt(favoritesMatcher.group(1));
             UserFavoritesBaseHandler.handle(exchange, userId);
         } else {
-            sendResponse(exchange, 404, "Not Found", "text/plain");
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), HttpStatus.NOT_FOUND.getDescription(), "text/plain");
         }
     }
 }
