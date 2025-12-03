@@ -1,5 +1,12 @@
 package org.example.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class UserProfile extends JsonObject {
     private int id;
     private int userId;
@@ -49,6 +56,19 @@ public class UserProfile extends JsonObject {
                 ", email='" + email + '\'' +
                 ", favoriteGenre='" + favoriteGenre + '\'' +
                 '}';
+    }
+
+    @Override
+    public String toJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("id", id);
+        jsonMap.put("userId", userId);
+        jsonMap.put("email", email != null ? email : "");
+        jsonMap.put("favoriteGenre", favoriteGenre != null ? favoriteGenre : "");
+
+        return mapper.writeValueAsString(jsonMap);
     }
 
     public static UserProfileBuilder builder() {

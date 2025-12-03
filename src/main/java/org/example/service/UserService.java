@@ -3,27 +3,29 @@ package org.example.service;
 import org.example.domain.User;
 import org.example.domain.UserProfile;
 import org.example.domain.UserToken;
+import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class UserService {
 
     private final UserRepository userRepository;
 
     private final UserProfileRepository userProfileRepository;
-    private final Map<String, UserToken> activeTokens = new ConcurrentHashMap<>();
+
+    private final TokenRepository tokenRepository;
+
     private static final long TOKEN_EXPIRATION_HOURS = 24;
 
-    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public void registerUser(User user) {
@@ -45,7 +47,7 @@ public class UserService {
         }
     }
 
-    public Optional<String> login(String username, String plainPassword) {
+    public Optional<String> loginUser(String username, String plainPassword) {
         Optional<User> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isEmpty()) {
             return Optional.empty();
@@ -59,8 +61,8 @@ public class UserService {
             }
 
             String token = generateToken(username);
-            UserToken tokenInfo = new UserToken(user.getId(), username, LocalDateTime.now().plusHours(TOKEN_EXPIRATION_HOURS));
-            activeTokens.put(token, tokenInfo);
+            UserToken userToken = new UserToken(token, user.getId(), LocalDateTime.now().plusHours(TOKEN_EXPIRATION_HOURS));
+            tokenRepository.save(userToken);
 
             return Optional.of(token);
         } catch (NoSuchAlgorithmException e) {
@@ -69,36 +71,36 @@ public class UserService {
     }
 
     public boolean logout(String token) {
-        return activeTokens.remove(token) != null;
+        return tokenRepository.deleteById(token);
     }
 
     public Optional<User> validateToken(String token) {
-        UserToken tokenInfo = activeTokens.get(token);
+        UserToken tokenInfo = tokenRepository.findById(token);
 
         if (tokenInfo == null) {
             return Optional.empty();
         }
 
-        if (tokenInfo.expiresAt().isBefore(LocalDateTime.now())) {
-            activeTokens.remove(token);
+        if (tokenInfo.createdAt().isBefore(LocalDateTime.now())) {
+            tokenRepository.deleteById(token);
             return Optional.empty();
         }
 
         return userRepository.findById(tokenInfo.userId());
     }
 
-    public boolean hasPermission(String token, String username) {
-        UserToken userToken = activeTokens.get(token);
+    public boolean hasPermission(String token, int userId) {
+        UserToken userToken = tokenRepository.findById(token);
         if (userToken == null) {
             return false;
         }
 
-        if (userToken.expiresAt().isBefore(LocalDateTime.now())) {
-            activeTokens.remove(token);
+        if (userToken.createdAt().isBefore(LocalDateTime.now())) {
+            tokenRepository.deleteById(token);
             return false;
         }
 
-        return userToken.username().equals(username);
+        return userToken.userId() == userId;
     }
 
     public Optional<UserProfile> getUserProfileById(int userId) {
@@ -113,7 +115,6 @@ public class UserService {
 
     public void cleanupExpiredTokens() {
         LocalDateTime now = LocalDateTime.now();
-        activeTokens.entrySet().removeIf(entry -> entry.getValue().expiresAt().isBefore(now));
     }
 
     public User getUserByUsername(String username) {

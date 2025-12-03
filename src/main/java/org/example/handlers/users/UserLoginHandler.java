@@ -6,12 +6,10 @@ import org.example.domain.User;
 import org.example.persistence.DatabaseConnection;
 import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
-import org.example.service.HashUtils;
 import org.example.service.UserService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -47,7 +45,7 @@ public class UserLoginHandler {
                 return;
             }
 
-            String token = userService.login(username, password).orElse(null);
+            String token = userService.loginUser(username, password).orElse(null);
 
             String errorResponse = "{\"message\": \"Login failed\"}";
 
