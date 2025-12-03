@@ -8,7 +8,12 @@ import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,7 +66,7 @@ public class UserService {
             }
 
             String token = generateToken(username);
-            UserToken userToken = new UserToken(token, user.getId(), LocalDateTime.now().plusHours(TOKEN_EXPIRATION_HOURS));
+            UserToken userToken = new UserToken(token, user.getId(), Timestamp.from(Instant.now()));
             tokenRepository.save(userToken);
 
             return Optional.of(token);
@@ -70,18 +75,19 @@ public class UserService {
         }
     }
 
-    public boolean logout(String token) {
-        return tokenRepository.deleteById(token);
+    /// removes token for user
+    public void logout(User user) {
+        tokenRepository.deleteByUserId(user.getId());
     }
 
     public Optional<User> validateToken(String token) {
-        UserToken tokenInfo = tokenRepository.findById(token);
+        UserToken tokenInfo = tokenRepository.findById(token).orElse(null);
 
         if (tokenInfo == null) {
             return Optional.empty();
         }
 
-        if (tokenInfo.createdAt().isBefore(LocalDateTime.now())) {
+        if (tokenInfo.createdAt().before(Timestamp.from(Instant.now()))) {
             tokenRepository.deleteById(token);
             return Optional.empty();
         }
@@ -90,12 +96,12 @@ public class UserService {
     }
 
     public boolean hasPermission(String token, int userId) {
-        UserToken userToken = tokenRepository.findById(token);
+        UserToken userToken = tokenRepository.findById(token).orElse(null);
         if (userToken == null) {
             return false;
         }
 
-        if (userToken.createdAt().isBefore(LocalDateTime.now())) {
+        if (userToken.createdAt().before(Timestamp.from(Instant.now().plus((TOKEN_EXPIRATION_HOURS), ChronoUnit.HOURS)))) {
             tokenRepository.deleteById(token);
             return false;
         }
@@ -153,5 +159,9 @@ public class UserService {
         }
 
         return Optional.of(userProfile);
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.User;
 import org.example.persistence.DatabaseConnection;
+import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 import org.example.service.UserService;
@@ -21,7 +22,11 @@ public class UserRegisterHandler {
 
     static {
         try {
-            userService = new UserService(new UserRepository(DatabaseConnection.getConnection()), new UserProfileRepository(DatabaseConnection.getConnection()));
+            userService = new UserService(
+                    new UserRepository(DatabaseConnection.getConnection()),
+                    new UserProfileRepository(DatabaseConnection.getConnection()),
+                    new TokenRepository(DatabaseConnection.getConnection())
+            );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,6 +41,12 @@ public class UserRegisterHandler {
                 requestData = mapper.readValue(requestBody, Map.class);
                 String username = requestData.get("username");
                 String password = requestData.get("password");
+
+                User existingUser = userService.getUserByUsername(username);
+                if (existingUser != null) {
+                    sendResponse(exchange, 409, "Username already exists", "text/plain");
+                    return;
+                }
 
                 User user = User.builder()
                         .username(username)

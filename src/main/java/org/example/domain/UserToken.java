@@ -1,8 +1,9 @@
 package org.example.domain;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-public record UserToken(String token, int userId, LocalDateTime createdAt) {
+public record UserToken(String token, int userId, Timestamp createdAt) {
     @Override
     public String token() {
         return token;
@@ -14,7 +15,7 @@ public record UserToken(String token, int userId, LocalDateTime createdAt) {
     }
 
     @Override
-    public LocalDateTime createdAt() {
+    public Timestamp createdAt() {
         return createdAt;
     }
 

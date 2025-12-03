@@ -21,16 +21,15 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, userToken.token());
             statement.setInt(2, userToken.userId());
-            statement.setTimestamp(1, userToken.);
-
-
+            statement.setTimestamp(3, userToken.createdAt());
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Optional<UserToken> findById(String s) {
+    public Optional<UserToken> findById(String tokenString) {
         return Optional.empty();
     }
 
@@ -46,6 +45,10 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
 
     @Override
     public void deleteAll() {
+
+    }
+
+    public void deleteByUserId(Integer userId) {
 
     }
 }

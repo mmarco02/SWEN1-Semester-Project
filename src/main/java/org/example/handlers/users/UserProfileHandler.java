@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.example.domain.UserProfile;
 import org.example.persistence.DatabaseConnection;
+import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 import org.example.service.UserService;
@@ -25,7 +26,8 @@ public class UserProfileHandler {
         try {
             userService = new UserService(
                     new UserRepository(DatabaseConnection.getConnection()),
-                    new UserProfileRepository(DatabaseConnection.getConnection())
+                    new UserProfileRepository(DatabaseConnection.getConnection()),
+                    new TokenRepository(DatabaseConnection.getConnection())
             );
         } catch (SQLException e) {
             throw new RuntimeException(e);

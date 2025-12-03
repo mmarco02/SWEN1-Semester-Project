@@ -6,6 +6,7 @@ import org.example.handlers.users.UserHandler;
 import org.example.handlers.users.UserLoginHandler;
 import org.example.handlers.users.UserRegisterHandler;
 import org.example.persistence.DatabaseConnection;
+import org.example.persistence.TokenRepository;
 import org.example.persistence.UserProfileRepository;
 import org.example.persistence.UserRepository;
 import org.example.service.UserService;
@@ -19,7 +20,8 @@ public class Server {
     private final int port;
     private final UserService userService = new UserService(
             new UserRepository(DatabaseConnection.getConnection()),
-            new UserProfileRepository(DatabaseConnection.getConnection())
+            new UserProfileRepository(DatabaseConnection.getConnection()),
+            new TokenRepository(DatabaseConnection.getConnection())
     );
 
     public Server(int port) throws SQLException {
