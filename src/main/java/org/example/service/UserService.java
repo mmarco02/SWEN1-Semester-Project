@@ -87,7 +87,7 @@ public class UserService {
             return Optional.empty();
         }
 
-        if (tokenInfo.createdAt().before(Timestamp.from(Instant.now()))) {
+        if (tokenInfo.createdAt().before(Timestamp.from(Instant.now().plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS)))) {
             tokenRepository.deleteById(token);
             return Optional.empty();
         }
