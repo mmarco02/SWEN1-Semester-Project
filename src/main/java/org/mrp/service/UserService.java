@@ -1,5 +1,6 @@
 package org.mrp.service;
 
+import com.sun.net.httpserver.HttpExchange;
 import org.mrp.domain.User;
 import org.mrp.domain.UserProfile;
 import org.mrp.domain.UserToken;
@@ -66,6 +67,7 @@ public class UserService {
 
             String token = generateToken(username);
             UserToken userToken = new UserToken(token, user.getId(), Timestamp.from(Instant.now()));
+            tokenRepository.deleteByUserId(user.getId());
             tokenRepository.save(userToken);
 
             return Optional.of(token);
@@ -79,6 +81,14 @@ public class UserService {
         tokenRepository.deleteByUserId(user.getId());
     }
 
+    public Optional<User> validateBearerToken(HttpExchange exchange) {
+        Optional<String> tokenOpt = AuthUtils.extractBearerToken(exchange);
+        if (tokenOpt.isEmpty()) {
+            return Optional.empty();
+        }
+        return validateToken(tokenOpt.get());
+    }
+
     public Optional<User> validateToken(String token) {
         Optional<UserToken> tokenInfoOpt = tokenRepository.findById(token);
 
@@ -88,12 +98,7 @@ public class UserService {
 
         UserToken tokenInfo = tokenInfoOpt.get();
 
-        Instant tokenCreationTime = tokenInfo.createdAt().toInstant();
-        Instant expirationTime = tokenCreationTime.plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS);
-        Instant now = Instant.now();
-
-        if (now.isAfter(expirationTime)) {
-            // Token has expired, delete it
+        if (isTokenExpired(tokenInfo)) {
             tokenRepository.deleteById(token);
             return Optional.empty();
         }
@@ -101,34 +106,23 @@ public class UserService {
         return userRepository.findById(tokenInfo.userId());
     }
 
-    public boolean isValidToken(int userId) {
-        UserToken token = getTokenByUserId(userId);
-        if (token == null || token.token() == null || token.token().isEmpty()) {
-            return false;
-        }
-        return validateToken(token.token()).isPresent();
+    public boolean hasPermissionForResource(String token, int resourceOwnerId) {
+        return validateToken(token)
+                .map(user -> user.getId() == resourceOwnerId)
+                .orElse(false);
     }
 
-    public boolean hasPermission(String token, int userId) {
-        Optional<UserToken> userTokenOpt = tokenRepository.findById(token);
-        if (userTokenOpt.isEmpty()) {
-            return false;
-        }
+    // overload method
+    public boolean hasPermissionForResource(HttpExchange exchange, int resourceOwnerId) {
+        return validateBearerToken(exchange)
+                .map(user -> user.getId() == resourceOwnerId)
+                .orElse(false);
+    }
 
-        UserToken userToken = userTokenOpt.get();
-
-        // Check if token has expired
-        Instant tokenCreationTime = userToken.createdAt().toInstant();
-        Instant expirationTime = tokenCreationTime.plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS);
-        Instant now = Instant.now();
-
-        if (now.isAfter(expirationTime)) {
-            // Token has expired, delete it
-            tokenRepository.deleteById(token);
-            return false;
-        }
-
-        return userToken.userId() == userId;
+    private boolean isTokenExpired(UserToken token) {
+        Instant expirationTime = token.createdAt().toInstant()
+                .plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS);
+        return Instant.now().isAfter(expirationTime);
     }
 
     public Optional<UserProfile> getUserProfileById(int userId) {

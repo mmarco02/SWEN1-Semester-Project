@@ -27,6 +27,9 @@ public class UserHandler {
         Matcher ratingsMatcher = ratingsPattern.matcher(path);
         Matcher favoritesMatcher = favoritesPattern.matcher(path);
 
+        System.out.println(profilePattern.pattern());
+        System.out.println(profileMatcher.pattern());
+
         if (profileMatcher.matches()) {
             int userId = Integer.parseInt(profileMatcher.group(1));
             UserProfileHandler.handle(exchange, userId);

@@ -2,6 +2,7 @@ package org.mrp.handlers.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.User;
 import org.mrp.domain.UserProfile;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
@@ -36,58 +37,83 @@ public class UserProfileHandler {
     }
 
     public static void handle(HttpExchange exchange, int userId) throws IOException {
+        Optional<User> authenticatedUser = userService.validateBearerToken(exchange);
+        if (authenticatedUser.isEmpty()) {
+            sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                    "Missing or invalid Authorization token", "text/plain");
+            return;
+        }
+
+        // Check if authenticated user has permission to access this User with userId's profile
+        User user = authenticatedUser.get();
+        if (user.getId() != userId) {
+            sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                    "Access denied", "text/plain");
+            return;
+        }
+
         switch (exchange.getRequestMethod()) {
             case "GET":
-                Optional<UserProfile> userProfile = userService.getUserProfileById(userId);
-                UserProfile userProfileObj = userProfile.orElse(null);
-                System.out.println(userProfileObj);
-                if(userProfileObj == null) {
-                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), "Not Found", "text/plain");
-                    return;
-                }
-
-                if (!userService.isValidToken(userId)) {
-                    sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(), HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
-                    return;
-                }
-
-                String response = userProfileObj.toJson();
-                System.out.println(response);
-                sendResponse(exchange, 200, response, "application/json");
+                handleGetProfile(exchange, userId);
                 break;
 
-
             case "PUT":
-                String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                System.out.println("Update profile for user " + userId + ": " + requestBody);
-                Optional<UserProfile> userProfileToUpdate = userService.getUserProfileById(userId);
-                UserProfile userProfileToUpdateObj = userProfileToUpdate.orElse(null);
-                if(userProfileToUpdateObj == null) {
-                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), "Not Found", "text/plain");
-                    return;
-                }
-                Map<String, String> requestValues = mapper.readValue(requestBody, Map.class);
-                String email = requestValues.get("email");
-                String favoriteGenre = requestValues.get("favoriteGenre");
-
-                if (!userService.isValidToken(userId)) {
-                    sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(), HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
-                    return;
-                }
-
-                userService.updateUserProfile(userProfileToUpdateObj.getUserId(), email, favoriteGenre);
-
-                String updateResponse = String.format("""
-                            {
-                                "message": "Profile updated successfully",
-                                "userId": "%s"
-                            }
-                            """, userId);
-                sendResponse(exchange, HttpStatus.OK.getCode(), updateResponse, "application/json");
+                handleUpdateProfile(exchange, userId);
                 break;
 
             default:
-                sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(), HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
+                sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(),
+                        HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
         }
+    }
+
+    private static void handleGetProfile(HttpExchange exchange, int userId) throws IOException {
+        Optional<UserProfile> userProfile = userService.getUserProfileById(userId);
+
+        if (userProfile.isEmpty()) {
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    "User profile not found", "text/plain");
+            return;
+        }
+
+        String response = userProfile.get().toJson();
+        sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
+    }
+
+    private static void handleUpdateProfile(HttpExchange exchange, int userId) throws IOException {
+        String requestBody = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+
+        Map<String, String> requestValues;
+        try {
+            requestValues = mapper.readValue(requestBody, Map.class);
+        } catch (Exception e) {
+            sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(),
+                    "Invalid JSON format", "text/plain");
+            return;
+        }
+
+        String email = requestValues.get("email");
+        String favoriteGenre = requestValues.get("favoriteGenre");
+
+        Optional<UserProfile> updatedProfile = userService.updateUserProfile(userId, email, favoriteGenre);
+
+        if (updatedProfile.isEmpty()) {
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    HttpStatus.NOT_FOUND.getDescription(), "text/plain");
+            return;
+        }
+
+        String response = String.format("""
+            {
+                "message": "Profile updated successfully",
+                "userId": %d,
+                "email": "%s",
+                "favoriteGenre": "%s"
+            }
+            """, userId,
+                updatedProfile.get().getEmail() != null ? updatedProfile.get().getEmail() : "",
+                updatedProfile.get().getFavoriteGenre() != null ? updatedProfile.get().getFavoriteGenre() : "");
+
+        sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
     }
 }
