@@ -108,6 +108,13 @@ Since the `com.sun.net` packages HttpServer doesnt have an implementation for Pa
 I have made my own `PathUtils` Class which has methods to create Regex Pattern like
 `/api/users/(\d+)"/profile` so when creating the context in my `Server` Class i can write URLs for Endpoints like mentioned earlier.
 
+### Token Authentication
+Whenever a user that is already registered logs in successfully, a token consisting of the username and a random UUID is created
+(e.g. user1-abc123), this token must be sent as a HTTP Authentication Bearer for each following request.
+For this i persits the Tokens in the Databse with the creation date.
+Each Token has an expiration time of 24 hours, after which the User has to log in again.
+If a user already has an existing token and logs in again, the old token is overwritten by the new one.
+
 ### Json Parsing
 To make my objects ready to be send I have to parse them into a Json Stirng.
 For this i use my `JsonObect` Class that uses the `com.fasterxml.jackson` package.
@@ -116,10 +123,39 @@ Each of my Domain Classes inherits from the `JsonObject`
 The child-class can also overwrite the implementation of that method to map only the wanted fields to a Json String.
 
 
-## Dependencies
+### Dependencies
 `com.sun.net` package <br>
 `com.fasterxml.jackson` package<br>
 `java.io` and `java.sql` packages<br>
 `java.util` packages for Collections, Regex, etc.<br>
 
+
+## Database
+As a Database I use PostgreSQL, which runs in a Docker container,
+that is created by the `docker-compose.yaml`
+
+#### docker-compose config
+- Image: postres:latest
+
+- Port: 5332 (mapped to 5432)
+
+#### Database intialization
+The `DatabaseConnection` class handles database setup.
+It Uses JDBC to connect to `jdbc:postgresql://localhost:5332/postgres`,
+then Reads the SQL commands from `/resources/db/init.sql`
+First all the old tables are Dropped to clean the Databse,
+then the tables are created on application start
+
+#### Schema
+The schema is visible in the `init.sql` but i will shortly 
+explain some important details
+
+Usernames are unique, since we are only logging in with a username and password
+it makes more sense to keep them unique
+
+Tokens have the Token (String) itself as the primary key. <br>  
+I chose to do this because since the usernames are unique + there is a generated UUID
+, it makes the Tokens unique to each user, so it can just be used as the Primary key. <br>
+My implementation of the Repositories, which resembles the JPA Repositories makes it easily possible
+to set the Type of the ID for an Entity in my Repositories.
 
