@@ -97,7 +97,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
         }
     }
 
-    public UserToken findByUserId(Integer userId) {
+    public Optional<UserToken> findByUserId(Integer userId) {
         String sql = "SELECT * FROM UserTokens WHERE User_ID = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             UserToken userToken = null;
@@ -109,8 +109,9 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
                         .userId(rs.getInt("User_ID"))
                         .createdAt(rs.getTimestamp("Created_At"))
                         .build();
+                return Optional.of(userToken);
             }
-            return userToken;
+            return Optional.empty();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

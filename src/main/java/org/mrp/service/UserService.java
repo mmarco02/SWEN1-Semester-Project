@@ -67,7 +67,9 @@ public class UserService {
 
             String token = generateToken(username);
             UserToken userToken = new UserToken(token, user.getId(), Timestamp.from(Instant.now()));
-            tokenRepository.deleteByUserId(user.getId());
+            if(tokenRepository.findByUserId(user.getId()).isPresent()){
+                tokenRepository.deleteByUserId(user.getId());
+            }
             tokenRepository.save(userToken);
 
             return Optional.of(token);
@@ -186,7 +188,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UserToken getTokenByUserId(int userId) {
+    public Optional<UserToken> getTokenByUserId(int userId) {
         return tokenRepository.findByUserId(userId);
     }
 }
