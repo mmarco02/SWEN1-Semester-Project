@@ -1,6 +1,7 @@
 package org.mrp.domain;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MediaEntry {
@@ -9,7 +10,7 @@ public class MediaEntry {
     private String description;
     private MediaType mediaType;
     private Year releaseYear;
-    private List<String> genres;
+    private List<String> genres = new ArrayList<>();
     private int age;
 
     public MediaEntry() {
