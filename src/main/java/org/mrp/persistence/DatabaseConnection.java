@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseConnection {
+
     public static void initDatabase() throws SQLException {
         Connection conn = getConnection();
 
@@ -19,12 +20,11 @@ public class DatabaseConnection {
 
         try {
             String initStatement = getSQLInitString();
-            //System.out.println(initStatement);
             assert conn != null;
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(initStatement);
         } catch (Exception e){
-            throw new  RuntimeException(e);
+            throw new RuntimeException(e);
         }
         System.out.println("Database initialized\n");
     }
@@ -47,10 +47,12 @@ public class DatabaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        //String username = System.getenv("DB_USER");
-        //String password =  System.getenv("DB_PASSWORD");
-        String dbUrl = "jdbc:postgresql://localhost:5332/postgres?" + "user" + "=postgres&password=" + "password";
+        String username = System.getenv("DB_USER");
+        String password = System.getenv("DB_PASSWORD");
+        String baseUrl = System.getenv("DB_BASE_URL");
+
+        String dbUrl = baseUrl + "?user=" + username + "&password=" + password;
+
         return DriverManager.getConnection(dbUrl);
     }
-
 }
