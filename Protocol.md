@@ -169,3 +169,8 @@ My implementation of the Repositories, which resembles the JPA Repositories make
 to set the Type of the ID for an Entity in my Repositories. <br>
 To Save the Genres for MediaEntries i use another Table calles MediaGenres which has a composite Primary key from the Entry Id and Genre
 
+## Testing
+I wrote tests using an HttpClient to automatically test the API Endpoints that i have already implemented
+Its important to use the Order annotation so that the tests wait for one another and are executed chronologically, which usually would not be the case for unit tests.
+I also wrote a `TestSetup` Class in which i establish the connections and set up simple methods to access the Endpoints
+
