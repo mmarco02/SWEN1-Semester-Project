@@ -32,9 +32,11 @@ project
 - **title**: `String`
 - **description**: `String`
 - **mediaType**: `MediaType`
-- **releaseYear**: `Year`
+- **releaseYear**: `Integer`
 - **genres**: `List<String>`
 - **age**: `int`
+- **average rating** `double`
+- **createdByUserId** `int`
 
 #### Rating
 - **id**: `int`
@@ -74,9 +76,13 @@ that are stored for the users when logging in
 #### PathUtils <br>
 - Contains functions for creating Endpoint Paths using Path Templates,
 so that I can use path variables (for example like Spring Controllers)
+#### AuthUtils <br>
+- Has Helper functions to get Bearer Token
 #### UserService
 - Contains Functions to access CRUD operations in Repositories,
-create and validate Tokens and other utility methods. 
+create and validate Tokens and other utility methods.
+#### MediaService
+- Contains Functions to access MediaRepository and helper functions for Ratings
 
 ## Persistence
 For my structure regarding persistence i created a Repository Interface
@@ -104,7 +110,7 @@ The Enum is used in the Handlers to get a better overview of which code is sent.
 ### Handlers
 I have split my Handlers into packages for each Entity
 and within that into separate classes for the various Operations.
-Since the `com.sun.net` packages HttpServer doesnt have an implementation for Path Variables (e.g. /api/users/{userId}/profile)
+Since the `com.sun.net` packages HttpServer doesnt have an implementation for Path Variables (e.g. /api/users/{id}/profile)
 I have made my own `PathUtils` Class which has methods to create Regex Pattern like
 `/api/users/(\d+)"/profile` so when creating the context in my `Server` Class i can write URLs for Endpoints like mentioned earlier.
 
@@ -145,6 +151,9 @@ It Uses JDBC to connect to `jdbc:postgresql://localhost:5332/postgres`,
 then Reads the SQL commands from `/resources/db/init.sql`
 First all the old tables are Dropped to clean the Databse,
 then the tables are created on application start
+The User, Password and BaseURL for initializing the connection are laoded
+from `resources/application.properties`, the variables are then gotten from the `pom.xml`
+to make it safer
 
 #### Schema
 The schema is visible in the `init.sql` but i will shortly 
@@ -157,5 +166,6 @@ Tokens have the Token (String) itself as the primary key. <br>
 I chose to do this because since the usernames are unique + there is a generated UUID
 , it makes the Tokens unique to each user, so it can just be used as the Primary key. <br>
 My implementation of the Repositories, which resembles the JPA Repositories makes it easily possible
-to set the Type of the ID for an Entity in my Repositories.
+to set the Type of the ID for an Entity in my Repositories. <br>
+To Save the Genres for MediaEntries i use another Table calles MediaGenres which has a composite Primary key from the Entry Id and Genre
 

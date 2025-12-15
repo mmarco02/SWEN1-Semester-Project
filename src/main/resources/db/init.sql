@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS UserProfiles;
 DROP TABLE IF EXISTS UserTokens;
+DROP TABLE IF EXISTS MediaGenres;
 DROP TABLE IF EXISTS FavoriteMedia;
 DROP TABLE IF EXISTS MediaRatings;
 DROP TABLE IF EXISTS MediaEntries;
@@ -41,6 +42,13 @@ CREATE TABLE MediaEntries (
     FOREIGN KEY (Created_By_User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS MediaGenres (
+    Entry_ID INT NOT NULL,
+    Genre VARCHAR(100) NOT NULL,
+    PRIMARY KEY (Entry_ID, Genre),
+    FOREIGN KEY (Entry_ID) REFERENCES MediaEntries(Entry_ID) ON DELETE CASCADE
+);
+
 CREATE TABLE MediaRatings (
     Rating_ID SERIAL PRIMARY KEY,
     Entry_ID INT NOT NULL,
@@ -67,3 +75,7 @@ CREATE TABLE FavoriteMedia (
 
 CREATE INDEX idx_tokens_token ON UserTokens(token);
 CREATE INDEX idx_tokens_user_id ON UserTokens(user_id);
+CREATE INDEX idx_media_user ON MediaEntries(Created_By_User_ID);
+CREATE INDEX idx_ratings_entry ON MediaRatings(Entry_ID);
+CREATE INDEX idx_favorites_user ON FavoriteMedia(User_ID);
+CREATE INDEX idx_genres_entry ON MediaGenres(Entry_ID);

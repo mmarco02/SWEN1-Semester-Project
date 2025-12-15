@@ -1,7 +1,6 @@
 package org.mrp.handlers.mediaEntries;
 
 import com.sun.net.httpserver.HttpExchange;
-import org.mrp.handlers.users.UserProfileHandler;
 import org.mrp.http.HttpStatus;
 import org.mrp.service.PathUtils;
 
@@ -13,22 +12,38 @@ import static org.mrp.service.HttpUtils.sendResponse;
 
 public class MediaEntryHandler {
 
-    private static final Pattern basePattern = PathUtils.createPatternFromTemplate("/api/media");
-    private static final Pattern idPattern = PathUtils.createPatternFromTemplate("/api/media/{id}");
+    private static final Pattern BASE_PATTERN = PathUtils.createPatternFromTemplate("/api/media");
+    private static final Pattern ID_PATTERN = PathUtils.createPatternFromTemplate("/api/media/{id}");
+    private static final Pattern RATE_PATTERN = PathUtils.createPatternFromTemplate("/api/media/{id}/rate");
+    private static final Pattern FAVORITE_PATTERN = PathUtils.createPatternFromTemplate("/api/media/{id}/favorite");
 
     public static void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
+        //System.out.println("Request method: " + exchange.getRequestMethod());
 
-        Matcher idPatterMatcher = idPattern.matcher(path);
-        Matcher basePatterMatcher = basePattern.matcher(path);
+        Matcher idMatcher = ID_PATTERN.matcher(path);
+        Matcher baseMatcher = BASE_PATTERN.matcher(path);
+        Matcher rateMatcher = RATE_PATTERN.matcher(path);
+        Matcher favoriteMatcher = FAVORITE_PATTERN.matcher(path);
 
-        if (idPatterMatcher.matches()) {
+        if (baseMatcher.matches()) {
+            System.out.println("Matched: " + BASE_PATTERN.pattern());
             MediaEntryBaseHandler.handle(exchange);
-        } else if (basePatterMatcher.matches()) {
-            int entryId = Integer.parseInt(basePatterMatcher.group(1));
-            UserProfileHandler.handle(exchange, entryId);
+        } else if (idMatcher.matches()) {
+            int entryId = Integer.parseInt(idMatcher.group(1));
+            System.out.println("Matched: " + entryId);
+            MediaEntryIdHandler.handle(exchange, entryId);
+        } else if (rateMatcher.matches()) {
+            int entryId = Integer.parseInt(rateMatcher.group(1));
+            System.out.println("Matched: " + entryId);
+            MediaEntryRateHandler.handle(exchange, entryId);
+        } else if (favoriteMatcher.matches()) {
+            int entryId = Integer.parseInt(favoriteMatcher.group(1));
+            System.out.println("Matched: " + entryId);
+            MediaEntryFavoriteHandler.handle(exchange, entryId);
         } else {
-            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(), HttpStatus.NOT_FOUND.getDescription(), "text/plain");
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    HttpStatus.NOT_FOUND.getDescription(), "text/plain");
         }
     }
 }

@@ -24,12 +24,4 @@ public class AuthUtils {
         String token = authHeader.substring(7).trim();
         return Optional.of(token);
     }
-
-    public static boolean isValidTokenFormat(String token) {
-        if (token == null || token.isEmpty()) {
-            return false;
-        }
-        // Basic format validation: should contain a hyphen (username-uuid)
-        return token.contains("-");
-    }
 }

@@ -4,15 +4,15 @@ import java.util.regex.Pattern;
 
 public class PathUtils {
     public static Pattern createPatternFromTemplate(String pathTemplate) {
-        // Replace {id} with regex group
-        String patternString = pathTemplate.replace("{id}", "(\\d+)");
+        // replace {id} with regex group (\\d+)
+        String patternString = pathTemplate
+                .replace("{id}", "(\\d+)")
+                // handle optional trailing slash
+                .replace("/", "\\/");
 
-        // escape special characters
-        patternString = Pattern.quote(patternString);
+        // add start and end anchors and make trailing slash optional
+        patternString = "^" + patternString + "\\/?$";
 
-        // Remove \Q and \E markers (only get pattern)
-        patternString = patternString.substring(2, patternString.length() - 2);
-
-        return Pattern.compile("^" + patternString + "$");
+        return Pattern.compile(patternString);
     }
 }

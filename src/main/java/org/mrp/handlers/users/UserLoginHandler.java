@@ -57,7 +57,7 @@ public class UserLoginHandler {
                 return;
             }
 
-            String response = "{\"message\": \"Login successful\" , \"token\": \"" + token + "\"}";
+            String response = "{\"token\": \"" + token + "\"}";
 
             sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
         } else {

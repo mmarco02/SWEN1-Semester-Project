@@ -6,9 +6,13 @@ import org.mrp.handlers.users.UserHandler;
 import org.mrp.handlers.users.UserLoginHandler;
 import org.mrp.handlers.users.UserRegisterHandler;
 import org.mrp.persistence.DatabaseConnection;
+import org.mrp.persistence.MediaEntryRepository;
+import org.mrp.persistence.RatingRepository;
 import org.mrp.persistence.TokenRepository;
 import org.mrp.persistence.UserProfileRepository;
 import org.mrp.persistence.UserRepository;
+import org.mrp.service.MediaService;
+import org.mrp.service.RatingService;
 import org.mrp.service.UserService;
 
 import java.io.IOException;
@@ -18,14 +22,22 @@ import java.sql.SQLException;
 public class Server {
     private HttpServer server;
     private final int port;
-    private final UserService userService = new UserService(
-            new UserRepository(DatabaseConnection.getConnection()),
-            new UserProfileRepository(DatabaseConnection.getConnection()),
-            new TokenRepository(DatabaseConnection.getConnection())
-    );
+    private final UserService userService;
+    private final MediaService mediaService;
+    private final RatingService ratingService;
 
     public Server(int port) throws SQLException {
         this.port = port;
+
+        UserRepository userRepository = new UserRepository(DatabaseConnection.getConnection());
+        UserProfileRepository userProfileRepository = new UserProfileRepository(DatabaseConnection.getConnection());
+        TokenRepository tokenRepository = new TokenRepository(DatabaseConnection.getConnection());
+        MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(DatabaseConnection.getConnection());
+        RatingRepository ratingRepository = new RatingRepository(DatabaseConnection.getConnection());
+
+        this.ratingService = new RatingService(ratingRepository);
+        this.userService = new UserService(userRepository, userProfileRepository, tokenRepository);
+        this.mediaService = new MediaService(mediaEntryRepository, ratingRepository, userService, ratingService);
     }
 
     public void start() throws IOException {
@@ -35,7 +47,7 @@ public class Server {
         server.createContext("/api/users/register", UserRegisterHandler::handle);
         server.createContext("/api/users/login", UserLoginHandler::handle);
 
-        // User routes with path variables
+        // User routes
         server.createContext("/api/users/", UserHandler::handle);
 
         // MediaEntry routes
@@ -59,7 +71,10 @@ public class Server {
         server.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
+    }
 
-        System.out.println("Press Ctrl+C to stop the server...");
+    public boolean isRunning() {
+        //check if server is initialized
+        return server != null;
     }
 }

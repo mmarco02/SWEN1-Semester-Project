@@ -44,7 +44,7 @@ public class UserProfileHandler {
             return;
         }
 
-        // Check if authenticated user has permission to access this User with userId's profile
+        // check if authenticated user has permission to access this User
         User user = authenticatedUser.get();
         if (user.getId() != userId) {
             sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),

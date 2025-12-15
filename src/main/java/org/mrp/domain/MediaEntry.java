@@ -9,9 +9,11 @@ public class MediaEntry {
     private String title;
     private String description;
     private MediaType mediaType;
-    private Year releaseYear;
+    private Integer releaseYear;
     private List<String> genres = new ArrayList<>();
     private int age;
+    private double averageRating;
+    private int createdByUserId;
 
     public MediaEntry() {
     }
@@ -48,11 +50,11 @@ public class MediaEntry {
         this.mediaType = mediaType;
     }
 
-    public Year getReleaseYear() {
+    public Integer getReleaseYear() {
         return releaseYear;
     }
 
-    public void setReleaseYear(Year releaseYear) {
+    public void setReleaseYear(Integer releaseYear) {
         this.releaseYear = releaseYear;
     }
 
@@ -72,6 +74,22 @@ public class MediaEntry {
         this.age = age;
     }
 
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getCreatedByUserId() {
+        return createdByUserId;
+    }
+
+    public void setCreatedByUserId(int createdByUserId) {
+        this.createdByUserId = createdByUserId;
+    }
+
     @Override
     public String toString() {
         return "MediaEntry{" +
@@ -82,6 +100,8 @@ public class MediaEntry {
                 ", releaseYear=" + releaseYear +
                 ", genres=" + genres +
                 ", age=" + age +
+                ", averageRating=" + averageRating +
+                ", createdByUserId=" + createdByUserId +
                 '}';
     }
 
@@ -112,7 +132,7 @@ public class MediaEntry {
             return this;
         }
 
-        public MediaEntryBuilder releaseYear(Year releaseYear) {
+        public MediaEntryBuilder releaseYear(Integer releaseYear) {
             mediaEntry.releaseYear = releaseYear;
             return this;
         }
@@ -124,6 +144,16 @@ public class MediaEntry {
 
         public MediaEntryBuilder age(int age) {
             mediaEntry.age = age;
+            return this;
+        }
+
+        public MediaEntryBuilder averageRating(double averageRating) {
+            mediaEntry.averageRating = averageRating;
+            return this;
+        }
+
+        public MediaEntryBuilder createdByUserId(int createdByUserId) {
+            mediaEntry.createdByUserId = createdByUserId;
             return this;
         }
 

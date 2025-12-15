@@ -78,7 +78,7 @@ public class UserService {
         }
     }
 
-    /// removes token for user
+    // removes token for user
     public void logout(User user) {
         tokenRepository.deleteByUserId(user.getId());
     }
