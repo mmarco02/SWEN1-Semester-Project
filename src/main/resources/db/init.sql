@@ -1,5 +1,9 @@
 DROP TABLE IF EXISTS UserProfiles;
 DROP TABLE IF EXISTS UserTokens;
+DROP TABLE IF EXISTS MediaGenres;
+DROP TABLE IF EXISTS FavoriteMedia;
+DROP TABLE IF EXISTS MediaRatings;
+DROP TABLE IF EXISTS MediaEntries;
 DROP TABLE IF EXISTS Users;
 
 CREATE TABLE IF NOT EXISTS Users (
@@ -18,11 +22,60 @@ CREATE TABLE IF NOT EXISTS UserProfiles (
 );
 
 CREATE TABLE UserTokens (
-    Token VARCHAR(255) PRIMARY KEY,
+    Token VARCHAR(256) PRIMARY KEY,
     User_ID INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
 );
 
+CREATE TABLE MediaEntries (
+    Entry_ID SERIAL PRIMARY KEY,
+    Title VARCHAR(256) NOT NULL,
+    Description TEXT,
+    MediaType VARCHAR(50) NOT NULL CHECK (MediaType IN ('MOVIE', 'SERIES', 'GAME')),
+    ReleaseYear INTEGER,
+    Age INT,
+    AverageRating DECIMAL(3,2) DEFAULT 0.00,
+    Created_By_User_ID INT NOT NULL,
+    Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (Created_By_User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS MediaGenres (
+    Entry_ID INT NOT NULL,
+    Genre VARCHAR(100) NOT NULL,
+    PRIMARY KEY (Entry_ID, Genre),
+    FOREIGN KEY (Entry_ID) REFERENCES MediaEntries(Entry_ID) ON DELETE CASCADE
+);
+
+CREATE TABLE MediaRatings (
+    Rating_ID SERIAL PRIMARY KEY,
+    Entry_ID INT NOT NULL,
+    User_ID INT NOT NULL,
+    Score DECIMAL(3,2) NOT NULL,
+    Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (Entry_ID) REFERENCES MediaEntries(Entry_ID) ON DELETE CASCADE,
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE,
+    UNIQUE (Entry_ID, User_ID)
+);
+
+CREATE TABLE FavoriteMedia (
+    Favorite_ID SERIAL PRIMARY KEY,
+    Entry_ID INT NOT NULL,
+    User_ID INT NOT NULL,
+    Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (Entry_ID) REFERENCES MediaEntries(Entry_ID) ON DELETE CASCADE,
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID) ON DELETE CASCADE,
+    UNIQUE (Entry_ID, User_ID)
+);
+
 CREATE INDEX idx_tokens_token ON UserTokens(token);
 CREATE INDEX idx_tokens_user_id ON UserTokens(user_id);
+CREATE INDEX idx_media_user ON MediaEntries(Created_By_User_ID);
+CREATE INDEX idx_ratings_entry ON MediaRatings(Entry_ID);
+CREATE INDEX idx_favorites_user ON FavoriteMedia(User_ID);
+CREATE INDEX idx_genres_entry ON MediaGenres(Entry_ID);
