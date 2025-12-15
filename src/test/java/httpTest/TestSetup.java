@@ -122,4 +122,15 @@ public class TestSetup {
 
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
+
+    public static HttpResponse<String> deleteMediaEntry(String token, int mediaId) throws IOException, InterruptedException {
+        java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create(BASE_URL + "/media/" + mediaId))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .DELETE()
+                .build();
+
+        return httpClient.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+    }
 }

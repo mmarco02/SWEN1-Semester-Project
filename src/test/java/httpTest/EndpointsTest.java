@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class UserHandlerTest {
+class EndpointsTest {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static String TEST_USER;
     private static final String TEST_PASSWORD = "testPassword123";
@@ -28,7 +28,7 @@ class UserHandlerTest {
 
             // start server if not already running
             server = new Server(8080);
-            if(!server.isRunning()){
+            if (!server.isRunning()) {
                 server.start();
                 Thread.sleep(2000); // give server time to start
             }
@@ -234,5 +234,55 @@ class UserHandlerTest {
 
         JsonNode jsonNode = mapper.readTree(response.body());
         assertTrue(jsonNode.isArray());
+    }
+
+    @Test
+    @Order(11)
+    void deleteMediaEntry_ShouldReturnSuccess() throws Exception {
+        HttpResponse<String> getResponse = TestSetup.getMediaEntryById(token, createdMediaId);
+        assertEquals(200, getResponse.statusCode(), "Media entry should exist before deletion");
+
+        HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry(token, createdMediaId);
+
+        System.out.println("Delete Media Response: " + deleteResponse.body());
+
+        assertEquals(200, deleteResponse.statusCode());
+        String body = deleteResponse.body();
+        assertTrue(body.contains("Media entry deleted successfully"));
+
+        HttpResponse<String> verifyResponse = TestSetup.getMediaEntryById(token, createdMediaId);
+        assertEquals(404, verifyResponse.statusCode(), "Media entry should not exist after");
+
+        HttpResponse<String> allMediaResponse = TestSetup.getMediaEntriesWithFilters(null);
+        JsonNode jsonNode = mapper.readTree(allMediaResponse.body());
+        boolean stillExists = false;
+        for (JsonNode entry : jsonNode) {
+            if (entry.get("id").asInt() == createdMediaId) {
+                stillExists = true;
+                break;
+            }
+        }
+        assertFalse(stillExists, "Media entry should not be in the list");
+    }
+
+    @Test
+    @Order(12)
+    void deleteNonExistentMediaEntry_ShouldReturnError() throws Exception {
+        HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry(token, 99999);
+
+        System.out.println("Delete Non-Existent Media Response: " + deleteResponse.body());
+
+        assertTrue(deleteResponse.statusCode() == 403 || deleteResponse.statusCode() == 404,
+                "Should return 403 or 404 for non-existent media entry");
+    }
+
+    @Test
+    @Order(13)
+    void deleteMediaEntryWithInvalidToken_ShouldReturnUnauthorized() throws Exception {
+        HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry("invalid-token", createdMediaId);
+
+        System.out.println("Delete with Invalid Token Response: " + deleteResponse.body());
+
+        assertEquals(401, deleteResponse.statusCode(), "Should return 401 Unauthorized with invalid token");
     }
 }
