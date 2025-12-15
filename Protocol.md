@@ -172,5 +172,27 @@ To Save the Genres for MediaEntries i use another Table calles MediaGenres which
 ## Testing
 I wrote tests using an HttpClient to automatically test the API Endpoints that i have already implemented
 Its important to use the Order annotation so that the tests wait for one another and are executed chronologically, which usually would not be the case for unit tests.
-I also wrote a `TestSetup` Class in which i establish the connections and set up simple methods to access the Endpoints
+I also wrote a `TestSetup` Class in which i establish the connections and set up simple methods to access the Endpoints. <br>
+So far it tests: <br>
+- user register
+- user login
+- get profile
+- update profile
+- create media entry
+- update media entry
+- get media entry (with request params)
+- delete media entry
 
+## Time Estimation
+
+| Task                         | Estimated Hours |                                                                     |
+|------------------------------|-----------------|---------------------------------------------------------------------|
+| **Project Setup**            | 2               | Setup of project structure, dependencies, and docker.               |
+| **Domain**                   | 1               | domain classes, JSON serialization some helper functions.           |
+| **Database**                 | 1.5             | Creating `init.sql`, defining tables, relationships etc..           |
+| **Repositories**             | 3.5             | designing structure for `BaseRepository`and Repository interface.   |
+| **HTTP Server and Handlers** | about 10        | implementing custom routing, request/response handling and endpoints. |
+| **Authentication**           | 2               | token generation, validation, etc. and saving user credentials.     |
+| **Services and Utils**       | 2.5             | writing util and Service classes                                    |
+| **Testing**                  | 3.5             | writing tests, fixing and refactoring tests.                        |
+| **Protocol**                 | 2.5             | writing the protocol                       |
