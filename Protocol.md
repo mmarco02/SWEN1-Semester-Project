@@ -101,7 +101,7 @@ The `run()` method, is the Method that gets called in the main method, it runs t
 and adds a shutdownHook which ends the server upon ending the program
 
 ### HTTP Responses
-For sending HTTP responses from the Server I have a `HttpUtils` class which has `sendMethod()`
+For sending HTTP responses from the Server I have a `HttpUtils` class which has `sendResponse()`
 which gets the HttpExchange, Status code, response and content type. <br>
 To send the responses with the Http Codes, I created an `HttpStatus` Enum
 which contains all the Http Codes I need, with the corresponding Descriptions.
@@ -117,7 +117,7 @@ I have made my own `PathUtils` Class which has methods to create Regex Pattern l
 ### Token Authentication
 Whenever a user that is already registered logs in successfully, a token consisting of the username and a random UUID is created
 (e.g. user1-abc123), this token must be sent as a HTTP Authentication Bearer for each following request.
-For this i persits the Tokens in the Databse with the creation date.
+For this i persists the Tokens in the Database with the creation date.
 Each Token has an expiration time of 24 hours, after which the User has to log in again.
 If a user already has an existing token and logs in again, the old token is overwritten by the new one.
 
