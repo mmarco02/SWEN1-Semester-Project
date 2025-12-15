@@ -3,8 +3,12 @@ https://github.com/mmarco02/SWEN1-Semester-Project.git
 
 ## How to Run:
 **1:** <br>
-`run docker-compose up --build`
+run `docker-compose up --build`
 from the project root
 
 **2:** <br>
 run the `Main` class in `src/main/java/org.mrp`
+
+#### Note:
+All tables in the Database get dropped whenever the Main class is started
+(so the db is cleared every time)
