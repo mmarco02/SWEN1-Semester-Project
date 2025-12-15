@@ -7,6 +7,7 @@ import org.mrp.domain.MediaType;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.*;
+import org.mrp.persistence.implemenatations.*;
 import org.mrp.service.MediaService;
 import org.mrp.service.RatingService;
 import org.mrp.service.UserService;

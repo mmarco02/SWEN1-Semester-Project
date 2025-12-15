@@ -1,6 +1,7 @@
-package org.mrp.persistence;
+package org.mrp.persistence.implemenatations;
 
 import org.mrp.domain.Rating;
+import org.mrp.persistence.BaseRepository;
 
 import java.sql.*;
 import java.util.ArrayList;

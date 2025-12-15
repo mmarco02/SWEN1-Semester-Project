@@ -4,8 +4,8 @@ import org.mrp.domain.MediaEntry;
 import org.mrp.domain.MediaType;
 import org.mrp.domain.Rating;
 import org.mrp.domain.User;
-import org.mrp.persistence.MediaEntryRepository;
-import org.mrp.persistence.RatingRepository;
+import org.mrp.persistence.implemenatations.MediaEntryRepository;
+import org.mrp.persistence.implemenatations.RatingRepository;
 
 import java.util.List;
 import java.util.Optional;

@@ -5,9 +5,9 @@ import com.sun.net.httpserver.HttpExchange;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
-import org.mrp.persistence.TokenRepository;
-import org.mrp.persistence.UserProfileRepository;
-import org.mrp.persistence.UserRepository;
+import org.mrp.persistence.implemenatations.TokenRepository;
+import org.mrp.persistence.implemenatations.UserProfileRepository;
+import org.mrp.persistence.implemenatations.UserRepository;
 import org.mrp.service.UserService;
 
 import java.io.IOException;

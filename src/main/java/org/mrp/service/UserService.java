@@ -4,9 +4,9 @@ import com.sun.net.httpserver.HttpExchange;
 import org.mrp.domain.User;
 import org.mrp.domain.UserProfile;
 import org.mrp.domain.UserToken;
-import org.mrp.persistence.TokenRepository;
-import org.mrp.persistence.UserProfileRepository;
-import org.mrp.persistence.UserRepository;
+import org.mrp.persistence.implemenatations.TokenRepository;
+import org.mrp.persistence.implemenatations.UserProfileRepository;
+import org.mrp.persistence.implemenatations.UserRepository;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;

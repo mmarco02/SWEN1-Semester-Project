@@ -1,6 +1,7 @@
-package org.mrp.persistence;
+package org.mrp.persistence.implemenatations;
 
 import org.mrp.domain.UserProfile;
+import org.mrp.persistence.BaseRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

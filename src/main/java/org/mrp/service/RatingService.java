@@ -1,6 +1,6 @@
 package org.mrp.service;
 
-import org.mrp.persistence.RatingRepository;
+import org.mrp.persistence.implemenatations.RatingRepository;
 
 //TODO: implement later
 public class RatingService {
