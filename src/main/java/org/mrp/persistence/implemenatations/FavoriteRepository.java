@@ -4,7 +4,6 @@ import org.mrp.domain.Favorite;
 import org.mrp.persistence.BaseRepository;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +30,7 @@ public class FavoriteRepository extends BaseRepository<Favorite, Integer> {
                 int favoriteId = rs.getInt("Favorite_ID");
                 Timestamp createdAt = rs.getTimestamp("Created_At");
                 favorite.setId(favoriteId);
-                favorite.setCreatedAt(createdAt.toLocalDateTime());
+                favorite.setCreatedAt(createdAt);
             } else {
                 throw new RuntimeException("Failed to save favorite - no data returned");
             }
@@ -188,7 +187,7 @@ public class FavoriteRepository extends BaseRepository<Favorite, Integer> {
                 .id(rs.getInt("Favorite_ID"))
                 .entryId(rs.getInt("Entry_ID"))
                 .userId(rs.getInt("User_ID"))
-                .createdAt(rs.getTimestamp("Created_At").toLocalDateTime())
+                .createdAt(rs.getTimestamp("Created_At"))
                 .build();
     }
 }

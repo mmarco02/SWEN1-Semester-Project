@@ -2,6 +2,7 @@ package org.mrp.handlers.ratings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.Rating;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
@@ -69,8 +70,8 @@ public class RatingsIdHandler {
         String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         try {
-            Map<String, String> requestData = mapper.readValue(requestBody, Map.class);
-            Integer stars = Integer.parseInt(requestData.get("stars"));
+            Map<String, Object> requestData = mapper.readValue(requestBody, Map.class);
+            Integer stars = (Integer) requestData.get("stars");
             String comment = (String) requestData.get("comment");
 
             if(stars == null ||comment.isEmpty() || comment == null) {
@@ -79,14 +80,34 @@ public class RatingsIdHandler {
                 return;
             }
 
+            User user = userOpt.get();
+
+            Optional<Rating> ratingOpt = ratingService.getRatingById(ratingId);
+            if(ratingOpt.isEmpty()) {
+                sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                        "Rating not found", "text/plain");
+                return;
+            }
+
+            Rating rating = ratingOpt.get();
+
+            if(rating.getUserId() != user.getId()) {
+                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+                return;
+            }
+
             boolean updated = ratingService.updateRating(ratingId, stars, comment, userOpt.get());
 
             if(updated) {
-                Map<String, String> response = Map.of("message", "Rating updated");
-                sendJsonResponse(exchange, HttpStatus.OK.getCode(),
-                        response);
+                Map<String, Object> response = Map.of(
+                        "ratingId", ratingId,
+                        "stars", stars,
+                        "comment", comment
+                );
+                sendJsonResponse(exchange, HttpStatus.OK.getCode(), response);
             } else {
-                sendResponse(exchange, HttpStatus.FOUND.getCode(),
+                sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
                         "You don't have permission to update this", "text/plain");
             }
         } catch (Exception e){

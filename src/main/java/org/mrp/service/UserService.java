@@ -14,7 +14,6 @@ import org.mrp.service.Utils.HashUtils;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -141,7 +140,6 @@ public class UserService {
     }
 
     public void cleanupExpiredTokens() {
-        LocalDateTime now = LocalDateTime.now();
         for (UserToken userToken : tokenRepository.findAll()) {
             if(userToken.createdAt().before(Timestamp.from(Instant.now().plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS)))) {
                 tokenRepository.deleteById(userToken.token());

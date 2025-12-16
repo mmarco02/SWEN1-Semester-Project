@@ -157,4 +157,32 @@ public class TestSetup {
 
         return httpClient.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
     }
+
+    public static HttpResponse<String> rateMediaEntry(String token, int mediaId, Map<String, Object> ratingData)
+            throws IOException, InterruptedException {
+        String json = mapper.writeValueAsString(ratingData);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/media/" + mediaId + "/rate"))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static HttpResponse<String> updateRating(String token, int ratingId, Map<String, Object> ratingData)
+            throws IOException, InterruptedException {
+        String json = mapper.writeValueAsString(ratingData);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/ratings/" + ratingId))
+                .header("Authorization", "Bearer " + token)
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
 }

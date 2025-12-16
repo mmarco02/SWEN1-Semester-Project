@@ -96,8 +96,8 @@ public class MediaService {
         return mediaEntryRepository.findByGenre(genre);
     }
 
-    public Optional<Rating> rateMediaEntry(int entryId, int userId, int score, String comment) {
-        if (score < 1 || score > 5) {
+    public Optional<Rating> rateMediaEntry(int entryId, int userId, int starValue, String comment) {
+        if (starValue < 1 || starValue > 5) {
             return Optional.empty();
         }
 
@@ -112,14 +112,14 @@ public class MediaService {
         Rating rating;
         if (existingRating.isPresent()) {
             rating = existingRating.get();
-            rating.setStarValue(score);
+            rating.setStarValue(starValue);
             rating.setComment(comment);
             ratingRepository.update(rating);
         } else {
             rating = Rating.builder()
                     .mediaEntryId(entryId)
                     .userId(userId)
-                    .starValue(score)
+                    .starValue(starValue)
                     .comment(comment)
                     .build();
             ratingRepository.save(rating);

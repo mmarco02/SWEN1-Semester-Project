@@ -4,7 +4,8 @@ import org.mrp.domain.Rating;
 import org.mrp.domain.User;
 import org.mrp.persistence.implemenatations.RatingRepository;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 //TODO: implement later
@@ -29,7 +30,7 @@ public class RatingService {
 
         rating.setStarValue(stars);
         rating.setComment(comment);
-        rating.setUpdatedAt(LocalDateTime.now());
+        rating.setUpdatedAt(Timestamp.from(Instant.now()));
 
         ratingRepository.update(rating);
         return true;
@@ -37,5 +38,19 @@ public class RatingService {
 
     public double calculateAverageRating(int entryId) {
         return ratingRepository.calculateAverageRating(entryId);
+    }
+
+    public Rating createRating(Integer stars, String comment) {
+        Rating rating = new Rating();
+        rating.setStarValue(stars);
+        rating.setComment(comment);
+        rating.setUpdatedAt(Timestamp.from(Instant.now()));
+        ratingRepository.save(rating);
+
+        return rating;
+    }
+
+    public Optional<Rating> getRatingById(int id) {
+        return ratingRepository.findById(id);
     }
 }

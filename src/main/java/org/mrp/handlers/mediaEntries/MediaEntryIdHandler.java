@@ -113,6 +113,19 @@ public class MediaEntryIdHandler {
             }
 
             try {
+                Optional<MediaEntry> entry = mediaService.getMediaEntryById(entryId);
+                if (entry.isEmpty()) {
+                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                            HttpStatus.NOT_FOUND.getDescription(), "text/plain");
+                    return;
+                }
+
+                if(userOpt.get().getId() != entry.get().getCreatedByUserId()){
+                    sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                            HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+                    return;
+                }
+
                 MediaType mediaType = MediaType.valueOf(mediaTypeStr.toUpperCase());
                 boolean updated = mediaService.updateMediaEntry(
                         entryId,

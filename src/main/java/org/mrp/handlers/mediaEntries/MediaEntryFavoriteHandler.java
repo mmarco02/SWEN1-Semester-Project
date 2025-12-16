@@ -106,6 +106,12 @@ public class MediaEntryFavoriteHandler {
         }
 
         try {
+            if(user.getId() != mediaOpt.get().getCreatedByUserId()){
+                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+                return;
+            }
+
             Favorite favorite = Favorite.builder()
                     .entryId(entryId)
                     .userId(user.getId())
@@ -143,6 +149,19 @@ public class MediaEntryFavoriteHandler {
         User user = userOpt.get();
 
         try {
+            Optional<MediaEntry> entry = mediaService.getMediaEntryById(entryId);
+            if(entry.isEmpty()){
+                sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                        "MediaEntry not Found", "text/plain");
+                return;
+            }
+
+            if(user.getId() != entry.get().getCreatedByUserId()){
+                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+                return;
+            }
+
             boolean removed = favoriteService.deleteByUserAndEntry(user.getId(), entryId);
 
             if (removed) {
