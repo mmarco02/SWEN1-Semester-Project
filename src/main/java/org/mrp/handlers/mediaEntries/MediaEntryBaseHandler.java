@@ -14,6 +14,7 @@ import org.mrp.service.UserService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mrp.service.HttpUtils.sendJsonResponse;
-import static org.mrp.service.HttpUtils.sendResponse;
+import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class MediaEntryBaseHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -38,17 +39,17 @@ public class MediaEntryBaseHandler {
     }
 
     private static void initializeServices() throws SQLException {
-        var connection = DatabaseConnection.getConnection();
+        Connection connection = DatabaseConnection.getConnection();
 
         UserRepository userRepository = new UserRepository(connection);
         UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
-        RatingService ratingService = new RatingService(ratingRepository);
+        LikeRepository likeRepository = new LikeRepository(connection);
         MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(connection);
 
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
-        mediaService = new MediaService(mediaEntryRepository, ratingRepository, userService, ratingService);
+        mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
 
     public static void handle(HttpExchange exchange) throws IOException {
@@ -67,6 +68,13 @@ public class MediaEntryBaseHandler {
 
     private static void handleGetMedia(HttpExchange exchange) throws IOException {
         try {
+            Optional<User> userOpt = userService.validateBearerToken(exchange);
+            if(userOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                        HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+                return;
+            }
+
             Map<String, String> queryParams = parseQueryParams(exchange);
             List<MediaEntry> allEntries = mediaService.getAllMediaEntries();
             List<MediaEntry> filteredEntries = applyFilters(allEntries, queryParams);
@@ -223,7 +231,7 @@ public class MediaEntryBaseHandler {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if (userOpt.isEmpty()) {
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 

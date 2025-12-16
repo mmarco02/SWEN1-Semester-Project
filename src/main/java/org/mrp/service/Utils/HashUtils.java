@@ -1,4 +1,4 @@
-package org.mrp.service;
+package org.mrp.service.Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

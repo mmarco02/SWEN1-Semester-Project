@@ -44,7 +44,7 @@ project
 - **mediaEntryId**: `int`
 - **starValue**: `int` (1–5)
 - **comment**: `String`
-- **timeStamp**: `LocalDateTime`
+- **timeStamp**: `Timestamp`
 
 #### User
 - **id**: `int`

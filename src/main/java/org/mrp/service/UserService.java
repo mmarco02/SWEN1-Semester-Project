@@ -1,17 +1,19 @@
 package org.mrp.service;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.MediaEntry;
 import org.mrp.domain.User;
 import org.mrp.domain.UserProfile;
 import org.mrp.domain.UserToken;
 import org.mrp.persistence.implemenatations.TokenRepository;
 import org.mrp.persistence.implemenatations.UserProfileRepository;
 import org.mrp.persistence.implemenatations.UserRepository;
+import org.mrp.service.Utils.AuthUtils;
+import org.mrp.service.Utils.HashUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -138,7 +140,6 @@ public class UserService {
     }
 
     public void cleanupExpiredTokens() {
-        LocalDateTime now = LocalDateTime.now();
         for (UserToken userToken : tokenRepository.findAll()) {
             if(userToken.createdAt().before(Timestamp.from(Instant.now().plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS)))) {
                 tokenRepository.deleteById(userToken.token());
@@ -190,5 +191,9 @@ public class UserService {
 
     public Optional<UserToken> getTokenByUserId(int userId) {
         return tokenRepository.findByUserId(userId);
+    }
+
+    public void setFavorite(MediaEntry mediaEntry) {
+
     }
 }

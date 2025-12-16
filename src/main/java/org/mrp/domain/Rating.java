@@ -1,18 +1,16 @@
 package org.mrp.domain;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
-public class Rating {
+public class Rating extends JsonObject {
     private int id;
-    private int userId;
     private int mediaEntryId;
+    private int userId;
     //starValue 1-5
     private int starValue;
     private String comment;
-    private LocalDateTime timeStamp;
-
-    public Rating() {
-    }
+    private Timestamp updatedAt;
+    private boolean isConfirmed;
 
     public int getId() {
         return id;
@@ -54,23 +52,32 @@ public class Rating {
         this.comment = comment;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
     }
 
     @Override
     public String toString() {
         return "Rating{" +
                 "id=" + id +
-                ", userId=" + userId +
                 ", mediaEntryId=" + mediaEntryId +
+                ", userId=" + userId +
                 ", starValue=" + starValue +
                 ", comment='" + comment + '\'' +
-                ", timeStamp=" + timeStamp +
+                ", updatedAt=" + updatedAt +
+                ", isConfirmed=" + isConfirmed +
                 '}';
     }
 
@@ -106,8 +113,13 @@ public class Rating {
             return this;
         }
 
-        public RatingBuilder timeStamp(LocalDateTime timeStamp) {
-            rating.timeStamp = timeStamp;
+        public RatingBuilder updatedAt(Timestamp updatedAt) {
+            rating.updatedAt = updatedAt;
+            return this;
+        }
+
+        public RatingBuilder isConfirmed(boolean isConfirmed) {
+            rating.isConfirmed = isConfirmed;
             return this;
         }
 

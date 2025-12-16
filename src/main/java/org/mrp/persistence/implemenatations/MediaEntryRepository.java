@@ -220,6 +220,33 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
         return entries;
     }
 
+    public Optional<MediaEntry> findByRatingId(int ratingId) {
+        String sql = """
+        SELECT e.Entry_ID, e.Title, e.Description, e.MediaType, e.ReleaseYear,
+               e.Age, e.AverageRating, e.Created_By_User_ID, e.Created_At, e.Updated_At
+        FROM MediaEntries e
+        JOIN MediaRatings r ON e.Entry_ID = r.Entry_ID
+        WHERE r.Rating_ID = ?
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, ratingId);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                MediaEntry entry = mapResultSetToMediaEntry(rs);
+                List<String> genres = mediaGenreRepository.findGenresByEntryId(entry.getId());
+                entry.setGenres(genres);
+
+                return Optional.of(entry);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find media entry", e);
+        }
+
+        return Optional.empty();
+    }
+
     private MediaEntry mapResultSetToMediaEntry(ResultSet rs) throws SQLException {
         MediaEntry entry = new MediaEntry();
         entry.setId(rs.getInt("Entry_ID"));

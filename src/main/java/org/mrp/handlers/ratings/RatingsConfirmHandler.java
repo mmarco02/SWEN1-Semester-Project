@@ -1,13 +1,14 @@
-package org.mrp.handlers.users;
+package org.mrp.handlers.ratings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.Like;
+import org.mrp.domain.MediaEntry;
 import org.mrp.domain.Rating;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
 import org.mrp.persistence.implemenatations.*;
-import org.mrp.service.FavoriteService;
 import org.mrp.service.MediaService;
 import org.mrp.service.RatingService;
 import org.mrp.service.UserService;
@@ -15,19 +16,17 @@ import org.mrp.service.UserService;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
 import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
-public class UserRatingsHandler {
+public class RatingsConfirmHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static MediaService mediaService;
     private static UserService userService;
     private static RatingService ratingService;
-    private static FavoriteService favoriteService;
 
     static {
         try {
@@ -46,24 +45,24 @@ public class UserRatingsHandler {
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
         LikeRepository likeRepository = new LikeRepository(connection);
-        FavoriteRepository favoriteRepository = new FavoriteRepository(connection);
 
         ratingService = new RatingService(ratingRepository, likeRepository);
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
         mediaService = new MediaService(mediaEntryRepository, ratingRepository);
-        favoriteService = new FavoriteService(favoriteRepository);
     }
 
-    public static void handle(HttpExchange exchange, int userId) throws IOException {
-        if (exchange.getRequestMethod().equals("GET")) {
-            handleGetUserRatings(exchange, userId);
-        } else {
-            sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(),
-                    HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
+    public static void handle(HttpExchange exchange, int ratingId) throws IOException {
+        switch (exchange.getRequestMethod()) {
+            case "POST":
+                handleConfirmRating(exchange, ratingId);
+                break;
+            default:
+                sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(),
+                        HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
         }
     }
 
-    private static void handleGetUserRatings(HttpExchange exchange, int userId) throws IOException {
+    private static void handleConfirmRating(HttpExchange exchange, int ratingId) throws IOException {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if(userOpt.isEmpty()){
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
@@ -71,15 +70,42 @@ public class UserRatingsHandler {
             return;
         }
 
-        List<Rating> ratingList = ratingService.findByUserId(userId).stream()
-                .sorted(Comparator.comparing(rating -> rating.getId()))
-                .toList();
-
-        if(ratingList.isEmpty()) {
+        Optional<Rating> ratingOpt = ratingService.getRatingById(ratingId);
+        if(ratingOpt.isEmpty()){
             sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
-                    "No Entries for this User", "text/plain");
+                    "Rating not found", "text/plain");
+            return;
         }
-        //favoriteList.forEach(System.out::println);
-        sendJsonResponse(exchange, HttpStatus.OK.getCode(), ratingList);
+
+        Rating rating = ratingOpt.get();
+
+        Optional<MediaEntry> mediaEntryOpt = mediaService.getMediaEntryByRatingId(ratingId);
+        if(mediaEntryOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    "Media Entry not found", "text/plain");
+            return;
+        }
+
+        if(userOpt.get().getId() != mediaEntryOpt.get().getCreatedByUserId()){
+            sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                    "Cannot confirm Rating for Media you're not the owner of", "text/plain");
+            return;
+        }
+
+        Optional<Rating> updatedRatingOpt = ratingService.confirmRating(rating);
+        if(updatedRatingOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(),
+                    "Could not confirm Rating", "text/plain");
+            return;
+        }
+
+        Rating updatedRating = updatedRatingOpt.get();
+
+        Map<String, Object> response = Map.of(
+                "ratingId", updatedRating.getId(),
+                "is_confirmed", updatedRating.isConfirmed()
+        );
+
+        sendJsonResponse(exchange, HttpStatus.OK.getCode(), response);
     }
 }

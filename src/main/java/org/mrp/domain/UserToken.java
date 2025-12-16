@@ -3,17 +3,14 @@ package org.mrp.domain;
 import java.sql.Timestamp;
 
 public record UserToken(String token, int userId, Timestamp createdAt) {
-    @Override
     public String token() {
         return token;
     }
 
-    @Override
     public int userId() {
         return userId;
     }
 
-    @Override
     public Timestamp createdAt() {
         return createdAt;
     }

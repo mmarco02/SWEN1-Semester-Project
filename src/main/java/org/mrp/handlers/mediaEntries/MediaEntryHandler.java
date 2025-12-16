@@ -2,13 +2,13 @@ package org.mrp.handlers.mediaEntries;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.http.HttpStatus;
-import org.mrp.service.PathUtils;
+import org.mrp.service.Utils.PathUtils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.mrp.service.HttpUtils.sendResponse;
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class MediaEntryHandler {
 
@@ -33,7 +33,7 @@ public class MediaEntryHandler {
             MediaEntryIdHandler.handle(exchange, entryId);
         } else if (rateMatcher.matches()) {
             int entryId = Integer.parseInt(rateMatcher.group(1));
-            MediaEntryRateHandler.handle(exchange, entryId);
+            MediaEntryRatingsHandler.handle(exchange, entryId);
         } else if (favoriteMatcher.matches()) {
             int entryId = Integer.parseInt(favoriteMatcher.group(1));
             MediaEntryFavoriteHandler.handle(exchange, entryId);

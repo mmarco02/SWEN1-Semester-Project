@@ -14,18 +14,20 @@ import org.mrp.service.UserService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mrp.service.HttpUtils.sendJsonResponse;
-import static org.mrp.service.HttpUtils.sendResponse;
+import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class MediaEntryIdHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static MediaService mediaService;
     private static UserService userService;
+    private static RatingService ratingService;
 
     static {
         try {
@@ -36,17 +38,18 @@ public class MediaEntryIdHandler {
     }
 
     private static void initializeServices() throws SQLException {
-        var connection = DatabaseConnection.getConnection();
+        Connection connection = DatabaseConnection.getConnection();
 
         MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(connection);
         UserRepository userRepository = new UserRepository(connection);
         UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
-        RatingService ratingService = new RatingService(ratingRepository);
+        LikeRepository likeRepository = new LikeRepository(connection);
 
+        ratingService = new RatingService(ratingRepository, likeRepository);
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
-        mediaService = new MediaService(mediaEntryRepository, ratingRepository, userService, ratingService);
+        mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
 
     public static void handle(HttpExchange exchange, int entryId) throws IOException {
@@ -68,6 +71,13 @@ public class MediaEntryIdHandler {
 
     private static void handleGetMediaById(HttpExchange exchange, int entryId) throws IOException {
         try {
+            Optional<User> userOpt = userService.validateBearerToken(exchange);
+            if(userOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                        HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+                return;
+            }
+
             Optional<MediaEntry> mediaEntry = mediaService.getMediaEntryById(entryId);
 
             if (mediaEntry.isPresent()) {
@@ -87,7 +97,7 @@ public class MediaEntryIdHandler {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if (userOpt.isEmpty()) {
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 
@@ -111,6 +121,19 @@ public class MediaEntryIdHandler {
             }
 
             try {
+                Optional<MediaEntry> entry = mediaService.getMediaEntryById(entryId);
+                if (entry.isEmpty()) {
+                    sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                            HttpStatus.NOT_FOUND.getDescription(), "text/plain");
+                    return;
+                }
+
+                if(userOpt.get().getId() != entry.get().getCreatedByUserId()){
+                    sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                            HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+                    return;
+                }
+
                 MediaType mediaType = MediaType.valueOf(mediaTypeStr.toUpperCase());
                 boolean updated = mediaService.updateMediaEntry(
                         entryId,
@@ -151,6 +174,12 @@ public class MediaEntryIdHandler {
         }
 
         try {
+            Optional<MediaEntry> mediaEntryOpt = mediaService.getMediaEntryById(entryId);
+            if(mediaEntryOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                        "Media Entry does not exist", "text/plain");
+                return;
+            }
             boolean success = mediaService.deleteMediaEntry(entryId, userOpt.get());
 
             if (success) {

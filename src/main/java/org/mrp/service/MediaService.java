@@ -14,16 +14,11 @@ public class MediaService {
 
     private final MediaEntryRepository mediaEntryRepository;
     private final RatingRepository ratingRepository;
-    private final UserService userService;
-    private final RatingService ratingService;
 
     public MediaService(MediaEntryRepository mediaEntryRepository,
-                        RatingRepository ratingRepository,
-                        UserService userService, RatingService ratingService) {
+                        RatingRepository ratingRepository) {
         this.mediaEntryRepository = mediaEntryRepository;
         this.ratingRepository = ratingRepository;
-        this.userService = userService;
-        this.ratingService = ratingService;
     }
 
     public MediaEntry createMediaEntry(String title, String description, MediaType mediaType,
@@ -101,8 +96,8 @@ public class MediaService {
         return mediaEntryRepository.findByGenre(genre);
     }
 
-    public Optional<Rating> rateMediaEntry(int entryId, int userId, int score, String comment) {
-        if (score < 1 || score > 5) {
+    public Optional<Rating> rateMediaEntry(int entryId, int userId, int starValue, String comment) {
+        if (starValue < 1 || starValue > 5) {
             return Optional.empty();
         }
 
@@ -117,20 +112,20 @@ public class MediaService {
         Rating rating;
         if (existingRating.isPresent()) {
             rating = existingRating.get();
-            rating.setStarValue(score);
+            rating.setStarValue(starValue);
             rating.setComment(comment);
             ratingRepository.update(rating);
         } else {
             rating = Rating.builder()
                     .mediaEntryId(entryId)
                     .userId(userId)
-                    .starValue(score)
+                    .starValue(starValue)
                     .comment(comment)
                     .build();
             ratingRepository.save(rating);
         }
 
-        double average = ratingService.calculateAverageRating(entryId);
+        double average = ratingRepository.calculateAverageRating(entryId);
         mediaEntryRepository.updateAverageRating(entryId, average);
 
         return Optional.of(rating);
@@ -210,5 +205,9 @@ public class MediaService {
                 .sum();
 
         return sum / userRatings.size();
+    }
+
+    public Optional<MediaEntry> getMediaEntryByRatingId(int ratingId) {
+        return mediaEntryRepository.findByRatingId(ratingId);
     }
 }
