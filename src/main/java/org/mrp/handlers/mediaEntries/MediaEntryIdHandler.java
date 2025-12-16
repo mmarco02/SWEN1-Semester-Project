@@ -112,7 +112,7 @@ public class MediaEntryIdHandler {
 
             try {
                 MediaType mediaType = MediaType.valueOf(mediaTypeStr.toUpperCase());
-                boolean success = mediaService.updateMediaEntry(
+                boolean updated = mediaService.updateMediaEntry(
                         entryId,
                         title,
                         description != null ? description : "",
@@ -123,7 +123,7 @@ public class MediaEntryIdHandler {
                         userOpt.get()
                 );
 
-                if (success) {
+                if (updated) {
                     Map<String, String> response = Map.of("message", "Media entry updated successfully");
                     sendJsonResponse(exchange, HttpStatus.OK.getCode(), response);
                 } else {

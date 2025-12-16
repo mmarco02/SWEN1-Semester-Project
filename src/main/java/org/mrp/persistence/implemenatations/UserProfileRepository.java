@@ -71,9 +71,11 @@ public class UserProfileRepository extends BaseRepository<UserProfile, Integer> 
     }
 
     public Optional<UserProfile> findByUsername(String username) {
-        String sql = "SELECT up.* FROM UserProfiles up " +
-                "LEFT JOIN Users u ON up.Profile_User_ID = u.User_ID " +
-                "WHERE u.Username = ?";
+        String sql = """
+                SELECT up.* FROM UserProfiles up 
+                LEFT JOIN Users u ON up.Profile_User_ID = u.User_ID 
+                WHERE u.Username = ?
+                """;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
