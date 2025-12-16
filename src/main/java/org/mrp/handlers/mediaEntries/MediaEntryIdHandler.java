@@ -14,13 +14,14 @@ import org.mrp.service.UserService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mrp.service.HttpUtils.sendJsonResponse;
-import static org.mrp.service.HttpUtils.sendResponse;
+import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class MediaEntryIdHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -36,7 +37,7 @@ public class MediaEntryIdHandler {
     }
 
     private static void initializeServices() throws SQLException {
-        var connection = DatabaseConnection.getConnection();
+        Connection connection = DatabaseConnection.getConnection();
 
         MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(connection);
         UserRepository userRepository = new UserRepository(connection);
@@ -46,7 +47,7 @@ public class MediaEntryIdHandler {
         RatingService ratingService = new RatingService(ratingRepository);
 
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
-        mediaService = new MediaService(mediaEntryRepository, ratingRepository, userService, ratingService);
+        mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
 
     public static void handle(HttpExchange exchange, int entryId) throws IOException {

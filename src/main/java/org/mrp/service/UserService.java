@@ -1,12 +1,15 @@
 package org.mrp.service;
 
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.MediaEntry;
 import org.mrp.domain.User;
 import org.mrp.domain.UserProfile;
 import org.mrp.domain.UserToken;
 import org.mrp.persistence.implemenatations.TokenRepository;
 import org.mrp.persistence.implemenatations.UserProfileRepository;
 import org.mrp.persistence.implemenatations.UserRepository;
+import org.mrp.service.Utils.AuthUtils;
+import org.mrp.service.Utils.HashUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
@@ -190,5 +193,9 @@ public class UserService {
 
     public Optional<UserToken> getTokenByUserId(int userId) {
         return tokenRepository.findByUserId(userId);
+    }
+
+    public void setFavorite(MediaEntry mediaEntry) {
+
     }
 }

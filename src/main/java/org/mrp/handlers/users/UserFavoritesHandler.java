@@ -5,7 +5,7 @@ import org.mrp.http.HttpStatus;
 
 import java.io.IOException;
 
-import static org.mrp.service.HttpUtils.sendResponse;
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class UserFavoritesHandler {
 

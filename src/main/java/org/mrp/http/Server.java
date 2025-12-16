@@ -37,7 +37,7 @@ public class Server {
 
         this.ratingService = new RatingService(ratingRepository);
         this.userService = new UserService(userRepository, userProfileRepository, tokenRepository);
-        this.mediaService = new MediaService(mediaEntryRepository, ratingRepository, userService, ratingService);
+        this.mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
 
     public void start() throws IOException {

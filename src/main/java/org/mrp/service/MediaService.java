@@ -14,16 +14,11 @@ public class MediaService {
 
     private final MediaEntryRepository mediaEntryRepository;
     private final RatingRepository ratingRepository;
-    private final UserService userService;
-    private final RatingService ratingService;
 
     public MediaService(MediaEntryRepository mediaEntryRepository,
-                        RatingRepository ratingRepository,
-                        UserService userService, RatingService ratingService) {
+                        RatingRepository ratingRepository) {
         this.mediaEntryRepository = mediaEntryRepository;
         this.ratingRepository = ratingRepository;
-        this.userService = userService;
-        this.ratingService = ratingService;
     }
 
     public MediaEntry createMediaEntry(String title, String description, MediaType mediaType,
@@ -130,7 +125,7 @@ public class MediaService {
             ratingRepository.save(rating);
         }
 
-        double average = ratingService.calculateAverageRating(entryId);
+        double average = ratingRepository.calculateAverageRating(entryId);
         mediaEntryRepository.updateAverageRating(entryId, average);
 
         return Optional.of(rating);
