@@ -10,9 +10,7 @@ public class Rating extends JsonObject {
     private int starValue;
     private String comment;
     private Timestamp updatedAt;
-
-    public Rating() {
-    }
+    private boolean isConfirmed;
 
     public int getId() {
         return id;
@@ -62,15 +60,24 @@ public class Rating extends JsonObject {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
+    }
+
     @Override
     public String toString() {
         return "Rating{" +
                 "id=" + id +
-                ", userId=" + userId +
                 ", mediaEntryId=" + mediaEntryId +
+                ", userId=" + userId +
                 ", starValue=" + starValue +
                 ", comment='" + comment + '\'' +
-                ", timeStamp=" + updatedAt +
+                ", updatedAt=" + updatedAt +
+                ", isConfirmed=" + isConfirmed +
                 '}';
     }
 
@@ -108,6 +115,11 @@ public class Rating extends JsonObject {
 
         public RatingBuilder updatedAt(Timestamp updatedAt) {
             rating.updatedAt = updatedAt;
+            return this;
+        }
+
+        public RatingBuilder isConfirmed(boolean isConfirmed) {
+            rating.isConfirmed = isConfirmed;
             return this;
         }
 

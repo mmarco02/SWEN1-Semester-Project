@@ -39,14 +39,15 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public void update(Rating rating) {
         String sql = """
-                UPDATE MediaRatings SET StarValue = ?, Comment = ?, Updated_At = CURRENT_TIMESTAMP
+                UPDATE MediaRatings SET StarValue = ?, Comment = ?, Updated_At = CURRENT_TIMESTAMP, Is_Confirmed = ?
                 WHERE Rating_ID = ?
                 """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDouble(1, rating.getStarValue());
             statement.setString(2, rating.getComment());
-            statement.setInt(3, rating.getId());
+            statement.setBoolean(3, rating.isConfirmed());
+            statement.setInt(4, rating.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update rating", e);
@@ -56,7 +57,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     @Override
     public Optional<Rating> findById(Integer id) {
         String sql = """
-                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At
+                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
                 FROM MediaRatings WHERE Rating_ID = ?
                 """;
 
@@ -75,7 +76,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public Optional<Rating> findByEntryAndUser(int entryId, int userId) {
         String sql = """
-                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At
+                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
                 FROM MediaRatings WHERE Entry_ID = ? AND User_ID = ?
                 """;
 
@@ -97,7 +98,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     public List<Rating> findAll() {
         List<Rating> ratings = new ArrayList<>();
         String sql = """
-            SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At
+            SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
             FROM MediaRatings ORDER BY Updated_At DESC
 
             """;
@@ -116,7 +117,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     public List<Rating> findByEntryId(int entryId) {
         List<Rating> ratings = new ArrayList<>();
         String sql = """
-                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At
+                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
                 FROM MediaRatings WHERE Entry_ID = ? ORDER BY Updated_At DESC
                 """;
 
@@ -135,7 +136,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     public List<Rating> findByUserId(int userId) {
         List<Rating> ratings = new ArrayList<>();
         String sql = """
-                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At
+                SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
                 FROM MediaRatings WHERE User_ID = ? ORDER BY Updated_At DESC
             """;
 
@@ -194,6 +195,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
         rating.setStarValue(rs.getInt("StarValue"));
         rating.setComment(rs.getString("Comment"));
         rating.setUpdatedAt(rs.getTimestamp("Updated_At"));
+        rating.setConfirmed(rs.getBoolean("Is_Confirmed"));
         return rating;
     }
 }

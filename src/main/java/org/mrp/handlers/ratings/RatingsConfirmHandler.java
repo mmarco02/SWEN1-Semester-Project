@@ -65,5 +65,7 @@ public class RatingsConfirmHandler {
                     HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
+
+
     }
 }
