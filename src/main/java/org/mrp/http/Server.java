@@ -2,6 +2,7 @@ package org.mrp.http;
 
 import com.sun.net.httpserver.HttpServer;
 import org.mrp.handlers.mediaEntries.MediaEntryHandler;
+import org.mrp.handlers.ratings.RatingsHandler;
 import org.mrp.handlers.users.UserHandler;
 import org.mrp.handlers.users.UserLoginHandler;
 import org.mrp.handlers.users.UserRegisterHandler;
@@ -52,6 +53,9 @@ public class Server {
 
         // MediaEntry routes
         server.createContext("/api/media", MediaEntryHandler::handle);
+
+        // Rating routes
+        server.createContext("/api/ratings/", RatingsHandler::handle);
 
         server.setExecutor(null);
         server.start();

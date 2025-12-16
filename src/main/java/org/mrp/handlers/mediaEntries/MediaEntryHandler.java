@@ -33,7 +33,7 @@ public class MediaEntryHandler {
             MediaEntryIdHandler.handle(exchange, entryId);
         } else if (rateMatcher.matches()) {
             int entryId = Integer.parseInt(rateMatcher.group(1));
-            MediaEntryRateHandler.handle(exchange, entryId);
+            MediaEntryRatingsHandler.handle(exchange, entryId);
         } else if (favoriteMatcher.matches()) {
             int entryId = Integer.parseInt(favoriteMatcher.group(1));
             MediaEntryFavoriteHandler.handle(exchange, entryId);
