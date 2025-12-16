@@ -4,7 +4,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MediaEntry {
+public class MediaEntry extends JsonObject {
     private int id;
     private String title;
     private String description;

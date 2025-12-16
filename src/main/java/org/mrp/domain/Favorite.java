@@ -2,7 +2,7 @@ package org.mrp.domain;
 
 import java.time.LocalDateTime;
 
-public class Favorite {
+public class Favorite extends JsonObject {
     private int id;
     private int entryId;
     private int userId;

@@ -2,7 +2,7 @@ package org.mrp.domain;
 
 import java.time.LocalDateTime;
 
-public class Rating {
+public class Rating extends JsonObject {
     private int id;
     private int userId;
     private int mediaEntryId;
