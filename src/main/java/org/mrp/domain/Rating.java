@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 
 public class Rating extends JsonObject {
     private int id;
-    private int userId;
     private int mediaEntryId;
+    private int userId;
     //starValue 1-5
     private int starValue;
     private String comment;
-    private LocalDateTime timeStamp;
+    private LocalDateTime updatedAt;
 
     public Rating() {
     }
@@ -54,12 +54,12 @@ public class Rating extends JsonObject {
         this.comment = comment;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class Rating extends JsonObject {
                 ", mediaEntryId=" + mediaEntryId +
                 ", starValue=" + starValue +
                 ", comment='" + comment + '\'' +
-                ", timeStamp=" + timeStamp +
+                ", timeStamp=" + updatedAt +
                 '}';
     }
 
@@ -106,8 +106,8 @@ public class Rating extends JsonObject {
             return this;
         }
 
-        public RatingBuilder timeStamp(LocalDateTime timeStamp) {
-            rating.timeStamp = timeStamp;
+        public RatingBuilder updatedAt(LocalDateTime updatedAt) {
+            rating.updatedAt = updatedAt;
             return this;
         }
 

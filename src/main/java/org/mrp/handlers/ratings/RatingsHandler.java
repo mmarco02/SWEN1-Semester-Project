@@ -1,10 +1,6 @@
 package org.mrp.handlers.ratings;
 
 import com.sun.net.httpserver.HttpExchange;
-import org.mrp.handlers.mediaEntries.MediaEntryBaseHandler;
-import org.mrp.handlers.mediaEntries.MediaEntryFavoriteHandler;
-import org.mrp.handlers.mediaEntries.MediaEntryIdHandler;
-import org.mrp.handlers.mediaEntries.MediaEntryRatingsHandler;
 import org.mrp.http.HttpStatus;
 import org.mrp.service.Utils.PathUtils;
 
