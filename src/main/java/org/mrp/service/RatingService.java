@@ -8,6 +8,7 @@ import org.mrp.persistence.implemenatations.RatingRepository;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public class RatingService {
@@ -141,5 +142,9 @@ public class RatingService {
         rating.setConfirmed(true);
         ratingRepository.update(rating);
         return ratingRepository.findById(rating.getId());
+    }
+
+    public List<Rating> findByUserId(int userId) {
+        return ratingRepository.findByUserId(userId);
     }
 }

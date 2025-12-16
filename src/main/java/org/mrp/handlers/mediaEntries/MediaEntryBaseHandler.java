@@ -68,6 +68,13 @@ public class MediaEntryBaseHandler {
 
     private static void handleGetMedia(HttpExchange exchange) throws IOException {
         try {
+            Optional<User> userOpt = userService.validateBearerToken(exchange);
+            if(userOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                        HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+                return;
+            }
+
             Map<String, String> queryParams = parseQueryParams(exchange);
             List<MediaEntry> allEntries = mediaService.getAllMediaEntries();
             List<MediaEntry> filteredEntries = applyFilters(allEntries, queryParams);
@@ -224,7 +231,7 @@ public class MediaEntryBaseHandler {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if (userOpt.isEmpty()) {
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 

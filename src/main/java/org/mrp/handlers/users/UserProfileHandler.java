@@ -68,6 +68,13 @@ public class UserProfileHandler {
     }
 
     private static void handleGetProfile(HttpExchange exchange, int userId) throws IOException {
+        Optional<User> userOpt = userService.validateBearerToken(exchange);
+        if(userOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+            return;
+        }
+
         Optional<UserProfile> userProfile = userService.getUserProfileById(userId);
 
         if (userProfile.isEmpty()) {
@@ -89,6 +96,13 @@ public class UserProfileHandler {
         } catch (Exception e) {
             sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(),
                     "Invalid JSON format", "text/plain");
+            return;
+        }
+
+        Optional<User> userOpt = userService.validateBearerToken(exchange);
+        if(userOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 

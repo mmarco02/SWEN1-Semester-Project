@@ -71,6 +71,13 @@ public class MediaEntryIdHandler {
 
     private static void handleGetMediaById(HttpExchange exchange, int entryId) throws IOException {
         try {
+            Optional<User> userOpt = userService.validateBearerToken(exchange);
+            if(userOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                        HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+                return;
+            }
+
             Optional<MediaEntry> mediaEntry = mediaService.getMediaEntryById(entryId);
 
             if (mediaEntry.isPresent()) {
@@ -90,7 +97,7 @@ public class MediaEntryIdHandler {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if (userOpt.isEmpty()) {
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 

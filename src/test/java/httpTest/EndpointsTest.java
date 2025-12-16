@@ -179,7 +179,7 @@ class EndpointsTest {
     @Test
     @Order(8)
     void getMediaEntriesWithFilters_ShouldReturnFilteredResults() throws Exception {
-        HttpResponse<String> allResponse = TestSetup.getMediaEntriesWithFilters(null);
+        HttpResponse<String> allResponse = TestSetup.getMediaEntriesWithFilters(null, token);
         System.out.println("All Media: " + allResponse.body());
 
         Map<String, String> filters = new HashMap<>();
@@ -188,7 +188,7 @@ class EndpointsTest {
         filters.put("releaseYear", "2024");
         filters.put("ageRestriction", "16");
 
-        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters);
+        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters, token);
 
         System.out.println("Filtered Media Response: " + response.body());
 
@@ -215,7 +215,7 @@ class EndpointsTest {
         Map<String, String> filters = new HashMap<>();
         filters.put("genre", "Action");
 
-        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters);
+        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters, token);
 
         System.out.println("Genre Filter Response: " + response.body());
 
@@ -232,7 +232,7 @@ class EndpointsTest {
         filters.put("rating", "0.0");
         filters.put("sortBy", "rating");
 
-        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters);
+        HttpResponse<String> response = TestSetup.getMediaEntriesWithFilters(filters, token);
 
         System.out.println("Rating Filter Response: " + response.body());
 
@@ -501,7 +501,7 @@ class EndpointsTest {
         HttpResponse<String> verifyResponse = TestSetup.getMediaEntryById(token, createdMediaId);
         assertEquals(404, verifyResponse.statusCode(), "Media entry should not exist after");
 
-        HttpResponse<String> allMediaResponse = TestSetup.getMediaEntriesWithFilters(null);
+        HttpResponse<String> allMediaResponse = TestSetup.getMediaEntriesWithFilters(null, token);
         JsonNode jsonNode = mapper.readTree(allMediaResponse.body());
         boolean stillExists = false;
         for (JsonNode entry : jsonNode) {

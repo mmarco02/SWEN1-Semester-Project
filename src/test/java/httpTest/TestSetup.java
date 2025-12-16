@@ -94,7 +94,7 @@ public class TestSetup {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    public static HttpResponse<String> getMediaEntriesWithFilters(Map<String, String> filters) throws IOException, InterruptedException {
+    public static HttpResponse<String> getMediaEntriesWithFilters(Map<String, String> filters, String token) throws IOException, InterruptedException {
         StringBuilder urlBuilder = new StringBuilder(BASE_URL + "/media");
 
         if (filters != null && !filters.isEmpty()) {
@@ -112,6 +112,7 @@ public class TestSetup {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(urlBuilder.toString()))
                 .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
                 .GET()
                 .build();
 

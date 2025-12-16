@@ -34,4 +34,8 @@ public class FavoriteService {
     public Optional<Favorite> findById(int favoriteId) {
         return favoriteRepository.findById(favoriteId);
     }
+
+    public List<Favorite> findByUserId(int userId) {
+        return favoriteRepository.findByUserId(userId);
+    }
 }

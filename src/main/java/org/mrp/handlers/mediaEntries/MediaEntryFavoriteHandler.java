@@ -72,6 +72,13 @@ public class MediaEntryFavoriteHandler {
 
     private static void handleGetFavorites(HttpExchange exchange, int entryId) throws IOException {
         try {
+            Optional<User> userOpt = userService.validateBearerToken(exchange);
+            if(userOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                        HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+                return;
+            }
+
             List<Favorite> favorites = favoriteService.findByEntryId(entryId);
             sendJsonResponse(exchange, HttpStatus.OK.getCode(), favorites);
         } catch (Exception e) {
@@ -83,9 +90,9 @@ public class MediaEntryFavoriteHandler {
 
     private static void handleAddFavorite(HttpExchange exchange, int entryId) throws IOException {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
-        if (userOpt.isEmpty()) {
+        if(userOpt.isEmpty()){
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 
@@ -142,7 +149,7 @@ public class MediaEntryFavoriteHandler {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
         if (userOpt.isEmpty()) {
             sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
-                    "Authentication required", "text/plain");
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
             return;
         }
 
