@@ -13,7 +13,7 @@ import static org.mrp.service.Utils.HttpUtils.sendResponse;
 public class RatingsHandler {
     private static final Pattern ID_PATTERN = PathUtils.createPatternFromTemplate("/api/ratings/{id}");
     private static final Pattern LIKE_PATTERN = PathUtils.createPatternFromTemplate("/api/ratings/{id}/like");
-    private static final Pattern CONFIRM_PATTERN = PathUtils.createPatternFromTemplate("/api/ratings/{id}/confim");
+    private static final Pattern CONFIRM_PATTERN = PathUtils.createPatternFromTemplate("/api/ratings/{id}/confirm");
 
     public static void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();

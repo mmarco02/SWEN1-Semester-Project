@@ -3,6 +3,8 @@ package org.mrp.handlers.ratings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.domain.Like;
+import org.mrp.domain.MediaEntry;
+import org.mrp.domain.Rating;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
@@ -14,8 +16,10 @@ import org.mrp.service.UserService;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
 import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class RatingsConfirmHandler {
@@ -66,6 +70,42 @@ public class RatingsConfirmHandler {
             return;
         }
 
+        Optional<Rating> ratingOpt = ratingService.getRatingById(ratingId);
+        if(ratingOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    "Rating not found", "text/plain");
+            return;
+        }
 
+        Rating rating = ratingOpt.get();
+
+        Optional<MediaEntry> mediaEntryOpt = mediaService.getMediaEntryByRatingId(ratingId);
+        if(mediaEntryOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                    "Media Entry not found", "text/plain");
+            return;
+        }
+
+        if(userOpt.get().getId() != mediaEntryOpt.get().getCreatedByUserId()){
+            sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+                    "Cannot confirm Rating for Media you're not the owner of", "text/plain");
+            return;
+        }
+
+        Optional<Rating> updatedRatingOpt = ratingService.confirmRating(rating);
+        if(updatedRatingOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(),
+                    "Could not confirm Rating", "text/plain");
+            return;
+        }
+
+        Rating updatedRating = updatedRatingOpt.get();
+
+        Map<String, Object> response = Map.of(
+                "ratingId", updatedRating.getId(),
+                "is_confirmed", updatedRating.isConfirmed()
+        );
+
+        sendJsonResponse(exchange, HttpStatus.OK.getCode(), response);
     }
 }

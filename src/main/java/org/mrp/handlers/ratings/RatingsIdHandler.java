@@ -98,7 +98,7 @@ public class RatingsIdHandler {
                 return;
             }
 
-            boolean updated = ratingService.updateRating(ratingId, stars, comment, userOpt.get());
+            boolean updated = mediaService.updateRating(ratingId, stars, comment, userOpt.get());
 
             if(updated) {
                 Map<String, Object> response = Map.of(

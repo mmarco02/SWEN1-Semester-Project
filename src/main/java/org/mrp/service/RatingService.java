@@ -136,4 +136,10 @@ public class RatingService {
     public Optional<Like> getLikeByRatingAndUser(int ratingId, int userId) {
         return likeRepository.findByRatingAndUser(ratingId, userId);
     }
+
+    public Optional<Rating> confirmRating(Rating rating) {
+        rating.setConfirmed(true);
+        ratingRepository.update(rating);
+        return ratingRepository.findById(rating.getId());
+    }
 }

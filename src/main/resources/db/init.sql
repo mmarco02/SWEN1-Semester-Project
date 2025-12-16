@@ -64,7 +64,7 @@ CREATE TABLE MediaRatings (
 );
 
 CREATE TABLE RatingLikes (
-    Like_ID INT NOT NULL,
+    Like_ID SERIAL PRIMARY KEY,
     Rating_ID INT NOT NULL,
     User_ID INT NOT NULL,
     FOREIGN KEY (Rating_ID) REFERENCES MediaRatings(Rating_ID) ON DELETE CASCADE,

@@ -206,4 +206,8 @@ public class MediaService {
 
         return sum / userRatings.size();
     }
+
+    public Optional<MediaEntry> getMediaEntryByRatingId(int ratingId) {
+        return mediaEntryRepository.findByRatingId(ratingId);
+    }
 }

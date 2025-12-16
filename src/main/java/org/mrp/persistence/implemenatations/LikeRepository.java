@@ -14,12 +14,11 @@ public class LikeRepository extends BaseRepository<Like, Integer> {
         super(connection);
     }
 
-    @Override
     public void save(Like like) {
         String sql = """
-                INSERT INTO RatingLikes (Rating_ID, User_ID)
-                VALUES (?, ?) RETURNING Like_ID
-                """;
+            INSERT INTO RatingLikes (Rating_ID, User_ID)
+            VALUES (?, ?) RETURNING Like_ID
+            """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setInt(1, like.getRatingId());
@@ -31,6 +30,7 @@ public class LikeRepository extends BaseRepository<Like, Integer> {
                 like.setId(likeId);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to save like", e);
         }
     }
