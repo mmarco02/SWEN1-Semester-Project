@@ -123,6 +123,30 @@ public class TestSetup {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    public static HttpResponse<String> favoriteMedia(String token, int mediaId) throws IOException, InterruptedException {
+        String json = String.format("");
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/media/" + mediaId + "/favorite"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static HttpResponse<String> unfavoriteMedia(String token, int mediaId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/media/" + mediaId + "/favorite"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .DELETE()
+                .build();
+
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
     public static HttpResponse<String> deleteMediaEntry(String token, int mediaId) throws IOException, InterruptedException {
         java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
                 .uri(java.net.URI.create(BASE_URL + "/media/" + mediaId))

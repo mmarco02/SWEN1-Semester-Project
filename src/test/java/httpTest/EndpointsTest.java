@@ -238,6 +238,38 @@ class EndpointsTest {
 
     @Test
     @Order(11)
+    void setMediaEntryAsFavorite_ShouldWork() throws Exception {
+        HttpResponse<String> response = TestSetup.favoriteMedia(token, createdMediaId);
+
+        assertEquals(201, response.statusCode());
+    }
+
+    @Test
+    @Order(12)
+    void setNonExistentMediaEntryAsFavorite_ShouldReturn404() throws Exception {
+        HttpResponse<String> response = TestSetup.favoriteMedia(token, 999);
+
+        assertEquals(404, response.statusCode());
+    }
+
+    @Test
+    @Order(13)
+    void unfavoriteNonExistentMediaEntry_ShouldReturn404() throws  Exception {
+        HttpResponse<String> response = TestSetup.unfavoriteMedia(token, 999);
+
+        assertEquals(404, response.statusCode());
+    }
+
+    @Test
+    @Order(14)
+    void unfavoriteValidMediaEntry_ShouldWork() throws Exception{
+        HttpResponse<String> response = TestSetup.unfavoriteMedia(token, createdMediaId);
+
+        assertEquals(200, response.statusCode());
+    }
+
+    @Test
+    @Order(15)
     void deleteMediaEntry_ShouldReturnSuccess() throws Exception {
         HttpResponse<String> getResponse = TestSetup.getMediaEntryById(token, createdMediaId);
         assertEquals(200, getResponse.statusCode(), "Media entry should exist before deletion");
@@ -266,7 +298,7 @@ class EndpointsTest {
     }
 
     @Test
-    @Order(12)
+    @Order(16)
     void deleteNonExistentMediaEntry_ShouldReturnError() throws Exception {
         HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry(token, 99999);
 
@@ -277,7 +309,7 @@ class EndpointsTest {
     }
 
     @Test
-    @Order(13)
+    @Order(17)
     void deleteMediaEntryWithInvalidToken_ShouldReturnUnauthorized() throws Exception {
         HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry("invalid-token", createdMediaId);
 

@@ -59,5 +59,7 @@ public class RatingsLikeHandler {
     private static void handleLikeRating(HttpExchange exchange, int ratingId) {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
 
+
+
     }
 }
