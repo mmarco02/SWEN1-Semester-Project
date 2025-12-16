@@ -1,8 +1,64 @@
 package org.mrp.handlers.mediaEntries;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.User;
+import org.mrp.http.HttpStatus;
+import org.mrp.persistence.DatabaseConnection;
+import org.mrp.persistence.implemenatations.*;
+import org.mrp.service.MediaService;
+import org.mrp.service.RatingService;
+import org.mrp.service.UserService;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+
+import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class MediaEntryRatingsHandler {
-    public static void handle(HttpExchange exchange, int entryId) {
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static MediaService mediaService;
+    private static UserService userService;
+    private static RatingService ratingService;
+
+    static {
+        try {
+            initializeServices();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to initialize services", e);
+        }
+    }
+
+    private static void initializeServices() throws SQLException {
+        Connection connection = DatabaseConnection.getConnection();
+
+        MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(connection);
+        UserRepository userRepository = new UserRepository(connection);
+        UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
+        TokenRepository tokenRepository = new TokenRepository(connection);
+        RatingRepository ratingRepository = new RatingRepository(connection);
+
+        ratingService = new RatingService(ratingRepository);
+        userService = new UserService(userRepository, userProfileRepository, tokenRepository);
+        mediaService = new MediaService(mediaEntryRepository, ratingRepository);
+    }
+
+    public static void handle(HttpExchange exchange, int entryId) throws IOException {
+        switch (exchange.getRequestMethod()) {
+            case "POST":
+                handleRateMedia(exchange, entryId);
+                break;
+            default:
+                sendResponse(exchange, HttpStatus.METHOD_NOT_ALLOWED.getCode(),
+                        HttpStatus.METHOD_NOT_ALLOWED.getDescription(), "text/plain");
+        }
+    }
+
+    private static void handleRateMedia(HttpExchange exchange, int entryId) {
+        Optional<User> userOpt = userService.validateBearerToken(exchange);
+
+
     }
 }

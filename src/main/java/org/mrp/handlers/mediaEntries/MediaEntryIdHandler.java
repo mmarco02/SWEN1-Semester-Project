@@ -27,6 +27,7 @@ public class MediaEntryIdHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static MediaService mediaService;
     private static UserService userService;
+    private static RatingService ratingService;
 
     static {
         try {
@@ -44,8 +45,8 @@ public class MediaEntryIdHandler {
         UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
-        RatingService ratingService = new RatingService(ratingRepository);
 
+        ratingService = new RatingService(ratingRepository);
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
         mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
