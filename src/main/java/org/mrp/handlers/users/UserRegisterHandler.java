@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Map;
 
+import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
 import static org.mrp.service.Utils.HttpUtils.sendResponse;
 
 public class UserRegisterHandler {
@@ -56,8 +57,10 @@ public class UserRegisterHandler {
 
                 userService.registerUser(user);
 
-                String response = "{\"message\": \"User registered\"}";
-                sendResponse(exchange, HttpStatus.OK.getCode(), response, "application/json");
+                Map<String, Object> response = Map.of(
+                        "userId", user.getId()
+                );
+                sendJsonResponse(exchange, HttpStatus.CREATED.getCode(), response);
             } catch (Exception e) {
                 String response = "{\"error\": \"Invalid JSON format\"}";
                 sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(), response, "application/json");

@@ -167,6 +167,12 @@ public class MediaEntryIdHandler {
         }
 
         try {
+            Optional<MediaEntry> mediaEntryOpt = mediaService.getMediaEntryById(entryId);
+            if(mediaEntryOpt.isEmpty()){
+                sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
+                        "Media Entry does not exist", "text/plain");
+                return;
+            }
             boolean success = mediaService.deleteMediaEntry(entryId, userOpt.get());
 
             if (success) {

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.mrp.http.HttpStatus;
 import org.mrp.http.Server;
+import org.mrp.persistence.DatabaseConnection;
 
+import javax.xml.crypto.Data;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,7 @@ class EndpointsTest {
             // start server if not already running
             server = new Server(8080);
             if (!server.isRunning()) {
+                DatabaseConnection.initDatabase();
                 server.start();
                 Thread.sleep(2000); // give server time to start
             }
@@ -49,15 +52,15 @@ class EndpointsTest {
 
     @Test
     @Order(1)
-    void registerUserWithValidData_ShouldReturn200() throws Exception {
+    void registerUserWithValidData_ShouldReturn201() throws Exception {
         HttpResponse<String> response = TestSetup.registerUser(TEST_USER, TEST_PASSWORD);
 
         System.out.println("Register Response: " + response.body());
 
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode());
         String body = response.body();
-        assertTrue(body.contains("\"message\""));
-        assertTrue(body.contains("User registered"));
+        assertTrue(body.contains("\"userId\""));
+        assertTrue(body.contains("1"));
     }
 
     @Test
@@ -512,12 +515,12 @@ class EndpointsTest {
 
     @Test
     @Order(28)
-    void deleteNonExistentMediaEntry_ShouldReturn403() throws Exception {
+    void deleteNonExistentMediaEntry_ShouldReturn404() throws Exception {
         HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry(token, 99999);
 
         System.out.println("Delete Non-Existent Media Response: " + deleteResponse.body());
 
-        assertEquals(403, deleteResponse.statusCode());
+        assertEquals(404, deleteResponse.statusCode());
     }
 
     @Test
