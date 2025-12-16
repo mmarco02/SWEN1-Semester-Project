@@ -43,8 +43,9 @@ public class MediaEntryRatingsHandler {
         UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
+        LikeRepository likeRepository = new LikeRepository(connection);
 
-        ratingService = new RatingService(ratingRepository);
+        ratingService = new RatingService(ratingRepository, likeRepository);
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
         mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }

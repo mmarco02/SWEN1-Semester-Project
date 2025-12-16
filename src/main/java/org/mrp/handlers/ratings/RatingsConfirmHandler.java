@@ -2,6 +2,7 @@ package org.mrp.handlers.ratings;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import org.mrp.domain.Like;
 import org.mrp.domain.User;
 import org.mrp.http.HttpStatus;
 import org.mrp.persistence.DatabaseConnection;
@@ -39,8 +40,9 @@ public class RatingsConfirmHandler {
         UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
         TokenRepository tokenRepository = new TokenRepository(connection);
         RatingRepository ratingRepository = new RatingRepository(connection);
+        LikeRepository likeRepository = new LikeRepository(connection);
 
-        ratingService = new RatingService(ratingRepository);
+        ratingService = new RatingService(ratingRepository, likeRepository);
         userService = new UserService(userRepository, userProfileRepository, tokenRepository);
         mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
@@ -56,8 +58,12 @@ public class RatingsConfirmHandler {
         }
     }
 
-    private static void handleConfirmRating(HttpExchange exchange, int ratingId) {
+    private static void handleConfirmRating(HttpExchange exchange, int ratingId) throws IOException {
         Optional<User> userOpt = userService.validateBearerToken(exchange);
-
+        if(userOpt.isEmpty()){
+            sendResponse(exchange, HttpStatus.UNAUTHORIZED.getCode(),
+                    HttpStatus.UNAUTHORIZED.getDescription(), "text/plain");
+            return;
+        }
     }
 }

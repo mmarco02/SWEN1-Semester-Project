@@ -7,17 +7,14 @@ import org.mrp.handlers.users.UserHandler;
 import org.mrp.handlers.users.UserLoginHandler;
 import org.mrp.handlers.users.UserRegisterHandler;
 import org.mrp.persistence.DatabaseConnection;
-import org.mrp.persistence.implemenatations.MediaEntryRepository;
-import org.mrp.persistence.implemenatations.RatingRepository;
-import org.mrp.persistence.implemenatations.TokenRepository;
-import org.mrp.persistence.implemenatations.UserProfileRepository;
-import org.mrp.persistence.implemenatations.UserRepository;
+import org.mrp.persistence.implemenatations.*;
 import org.mrp.service.MediaService;
 import org.mrp.service.RatingService;
 import org.mrp.service.UserService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Server {
@@ -30,13 +27,16 @@ public class Server {
     public Server(int port) throws SQLException {
         this.port = port;
 
-        UserRepository userRepository = new UserRepository(DatabaseConnection.getConnection());
-        UserProfileRepository userProfileRepository = new UserProfileRepository(DatabaseConnection.getConnection());
-        TokenRepository tokenRepository = new TokenRepository(DatabaseConnection.getConnection());
-        MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(DatabaseConnection.getConnection());
-        RatingRepository ratingRepository = new RatingRepository(DatabaseConnection.getConnection());
+        Connection connection = DatabaseConnection.getConnection();
 
-        this.ratingService = new RatingService(ratingRepository);
+        UserRepository userRepository = new UserRepository(connection);
+        UserProfileRepository userProfileRepository = new UserProfileRepository(connection);
+        TokenRepository tokenRepository = new TokenRepository(connection);
+        MediaEntryRepository mediaEntryRepository = new MediaEntryRepository(connection);
+        RatingRepository ratingRepository = new RatingRepository(connection);
+        LikeRepository likeRepository = new LikeRepository(connection);
+
+        this.ratingService = new RatingService(ratingRepository, likeRepository);
         this.userService = new UserService(userRepository, userProfileRepository, tokenRepository);
         this.mediaService = new MediaService(mediaEntryRepository, ratingRepository);
     }
