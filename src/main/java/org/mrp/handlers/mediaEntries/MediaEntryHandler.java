@@ -27,19 +27,15 @@ public class MediaEntryHandler {
         Matcher favoriteMatcher = FAVORITE_PATTERN.matcher(path);
 
         if (baseMatcher.matches()) {
-            System.out.println("Matched: " + BASE_PATTERN.pattern());
             MediaEntryBaseHandler.handle(exchange);
         } else if (idMatcher.matches()) {
             int entryId = Integer.parseInt(idMatcher.group(1));
-            System.out.println("Matched: " + entryId);
             MediaEntryIdHandler.handle(exchange, entryId);
         } else if (rateMatcher.matches()) {
             int entryId = Integer.parseInt(rateMatcher.group(1));
-            System.out.println("Matched: " + entryId);
             MediaEntryRateHandler.handle(exchange, entryId);
         } else if (favoriteMatcher.matches()) {
             int entryId = Integer.parseInt(favoriteMatcher.group(1));
-            System.out.println("Matched: " + entryId);
             MediaEntryFavoriteHandler.handle(exchange, entryId);
         } else {
             sendResponse(exchange, HttpStatus.NOT_FOUND.getCode(),
