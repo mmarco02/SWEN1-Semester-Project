@@ -24,15 +24,15 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                 VALUES (?, ?, ?, ?, ?, ?) RETURNING Entry_ID, Created_At, Updated_At, AverageRating
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, entity.getTitle());
-            pstmt.setString(2, entity.getDescription());
-            pstmt.setString(3, entity.getMediaType().name());
-            pstmt.setInt(4, entity.getReleaseYear());
-            pstmt.setInt(5, entity.getAge());
-            pstmt.setInt(6, entity.getCreatedByUserId());
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, entity.getTitle());
+            statement.setString(2, entity.getDescription());
+            statement.setString(3, entity.getMediaType().name());
+            statement.setInt(4, entity.getReleaseYear());
+            statement.setInt(5, entity.getAge());
+            statement.setInt(6, entity.getCreatedByUserId());
 
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 int entryId = rs.getInt("Entry_ID");
                 entity.setId(entryId);
@@ -53,15 +53,15 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                 WHERE Entry_ID = ?
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, entity.getTitle());
-            pstmt.setString(2, entity.getDescription());
-            pstmt.setString(3, entity.getMediaType().name());
-            pstmt.setInt(4, entity.getReleaseYear());
-            pstmt.setInt(5, entity.getAge());
-            pstmt.setInt(6, entity.getId());
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, entity.getTitle());
+            statement.setString(2, entity.getDescription());
+            statement.setString(3, entity.getMediaType().name());
+            statement.setInt(4, entity.getReleaseYear());
+            statement.setInt(5, entity.getAge());
+            statement.setInt(6, entity.getId());
 
-            pstmt.executeUpdate();
+            statement.executeUpdate();
             // update genres
             if (entity.getGenres() != null) {
                 mediaGenreRepository.updateGenresForEntry(entity.getId(), entity.getGenres());
@@ -79,9 +79,9 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                 FROM MediaEntries WHERE Entry_ID = ?
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
                 MediaEntry entry = mapResultSetToMediaEntry(rs);
@@ -106,8 +106,8 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                 FROM MediaEntries ORDER BY Created_At DESC
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 MediaEntry entry = mapResultSetToMediaEntry(rs);
                 // load genres for each entry
@@ -130,9 +130,9 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                 FROM MediaEntries WHERE Created_By_User_ID = ? ORDER BY Created_At DESC
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 MediaEntry entry = mapResultSetToMediaEntry(rs);
                 // load genres for each entry
@@ -153,9 +153,9 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
         mediaGenreRepository.deleteGenresForEntry(id);
 
         String sql = "DELETE FROM MediaEntries WHERE Entry_ID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete media entry", e);
         }
@@ -168,12 +168,12 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
         String deleteEntriesSql = "DELETE FROM MediaEntries";
 
         try {
-            try (PreparedStatement pstmt = connection.prepareStatement(deleteGenresSql)) {
-                pstmt.executeUpdate();
+            try (PreparedStatement statement = connection.prepareStatement(deleteGenresSql)) {
+                statement.executeUpdate();
             }
 
-            try (PreparedStatement pstmt = connection.prepareStatement(deleteEntriesSql)) {
-                pstmt.executeUpdate();
+            try (PreparedStatement statement = connection.prepareStatement(deleteEntriesSql)) {
+                statement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete all media entries and genres", e);
@@ -182,10 +182,10 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
 
     public void updateAverageRating(int entryId, double averageRating) {
         String sql = "UPDATE MediaEntries SET AverageRating = ? WHERE Entry_ID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setDouble(1, averageRating);
-            pstmt.setInt(2, entryId);
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, averageRating);
+            statement.setInt(2, entryId);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update average rating", e);
         }
@@ -202,9 +202,9 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
                                 ORDER BY e.Created_At DESC
         """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, "%" + genre + "%");
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, "%" + genre + "%");
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 MediaEntry entry = mapResultSetToMediaEntry(rs);
 

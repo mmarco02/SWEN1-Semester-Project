@@ -21,13 +21,13 @@ public class MediaGenreRepository {
 
         String sql = "INSERT INTO MediaGenres (Entry_ID, Genre) VALUES (?, ?)";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
             for (String genre : genres) {
-                pstmt.setInt(1, entryId);
-                pstmt.setString(2, genre);
-                pstmt.addBatch();
+                statement.setInt(1, entryId);
+                statement.setString(2, genre);
+                statement.addBatch();
             }
-            pstmt.executeBatch();
+            statement.executeBatch();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save genres for entry " + entryId, e);
         }
@@ -37,9 +37,9 @@ public class MediaGenreRepository {
         List<String> genres = new ArrayList<>();
         String sql = "SELECT Genre FROM MediaGenres WHERE Entry_ID = ? ORDER BY Genre";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entryId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entryId);
+            ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {
                 genres.add(rs.getString("Genre"));
@@ -53,9 +53,9 @@ public class MediaGenreRepository {
     public void deleteGenresForEntry(int entryId) {
         String sql = "DELETE FROM MediaGenres WHERE Entry_ID = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entryId);
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entryId);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete genres for entry " + entryId, e);
         }

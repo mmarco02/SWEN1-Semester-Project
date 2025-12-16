@@ -21,12 +21,12 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 """;
 
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entity.getMediaEntryId());
-            pstmt.setInt(2, entity.getUserId());
-            pstmt.setDouble(3, entity.getStarValue());
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entity.getMediaEntryId());
+            statement.setInt(2, entity.getUserId());
+            statement.setDouble(3, entity.getStarValue());
 
-            ResultSet rs = pstmt.executeQuery();
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 entity.setId(rs.getInt("Rating_ID"));
                 entity.setTimeStamp(rs.getTimestamp("Created_At").toLocalDateTime());
@@ -42,10 +42,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 WHERE Rating_ID = ?
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setDouble(1, entity.getStarValue());
-            pstmt.setInt(2, entity.getId());
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setDouble(1, entity.getStarValue());
+            statement.setInt(2, entity.getId());
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update rating", e);
         }
@@ -58,9 +58,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 FROM MediaRatings WHERE Rating_ID = ?
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
                 return Optional.of(mapResultSetToRating(rs));
@@ -77,10 +77,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 FROM MediaRatings WHERE Entry_ID = ? AND User_ID = ?
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entryId);
-            pstmt.setInt(2, userId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entryId);
+            statement.setInt(2, userId);
+            ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
                 return Optional.of(mapResultSetToRating(rs));
@@ -100,8 +100,8 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
             """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 ratings.add(mapResultSetToRating(rs));
             }
@@ -118,9 +118,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 FROM MediaRatings WHERE Entry_ID = ? ORDER BY Created_At DESC
                 """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entryId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entryId);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 ratings.add(mapResultSetToRating(rs));
             }
@@ -137,9 +137,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 FROM MediaRatings WHERE User_ID = ? ORDER BY Created_At DESC
             """;
 
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, userId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
                 ratings.add(mapResultSetToRating(rs));
             }
@@ -152,9 +152,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     @Override
     public void deleteById(Integer id) {
         String sql = "DELETE FROM MediaRatings WHERE Rating_ID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete rating", e);
         }
@@ -163,8 +163,8 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     @Override
     public void deleteAll() {
         String sql = "DELETE FROM MediaRatings";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to delete all ratings", e);
         }
@@ -172,9 +172,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public double calculateAverageRating(int entryId) {
         String sql = "SELECT AVG(Score) as average FROM MediaRatings WHERE Entry_ID = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setInt(1, entryId);
-            ResultSet rs = pstmt.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, entryId);
+            ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return rs.getDouble("average");
             }
