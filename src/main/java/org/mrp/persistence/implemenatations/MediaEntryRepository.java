@@ -19,8 +19,10 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
 
     @Override
     public void save(MediaEntry entity) {
-        String sql = "INSERT INTO MediaEntries (Title, Description, MediaType, ReleaseYear, Age, Created_By_User_ID) " +
-                "VALUES (?, ?, ?, ?, ?, ?) RETURNING Entry_ID, Created_At, Updated_At, AverageRating";
+        String sql = """
+                INSERT INTO MediaEntries (Title, Description, MediaType, ReleaseYear, Age, Created_By_User_ID)
+                VALUES (?, ?, ?, ?, ?, ?) RETURNING Entry_ID, Created_At, Updated_At, AverageRating
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, entity.getTitle());
@@ -45,9 +47,11 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
     }
 
     public void update(MediaEntry entity) {
-        String sql = "UPDATE MediaEntries SET Title = ?, Description = ?, MediaType = ?, " +
-                "ReleaseYear = ?, Age = ?, Updated_At = CURRENT_TIMESTAMP " +
-                "WHERE Entry_ID = ?";
+        String sql = """
+                UPDATE MediaEntries SET Title = ?, Description = ?, MediaType = ?,
+                ReleaseYear = ?, Age = ?, Updated_At = CURRENT_TIMESTAMP
+                WHERE Entry_ID = ?
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, entity.getTitle());
@@ -69,9 +73,11 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
 
     @Override
     public Optional<MediaEntry> findById(Integer id) {
-        String sql = "SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age, " +
-                "AverageRating, Created_By_User_ID, Created_At, Updated_At " +
-                "FROM MediaEntries WHERE Entry_ID = ?";
+        String sql = """
+                SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age,
+                AverageRating, Created_By_User_ID, Created_At, Updated_At
+                FROM MediaEntries WHERE Entry_ID = ?
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -94,9 +100,11 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
     @Override
     public List<MediaEntry> findAll() {
         List<MediaEntry> entries = new ArrayList<>();
-        String sql = "SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age, " +
-                "AverageRating, Created_By_User_ID, Created_At, Updated_At " +
-                "FROM MediaEntries ORDER BY Created_At DESC";
+        String sql = """
+                SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age,
+                AverageRating, Created_By_User_ID, Created_At, Updated_At
+                FROM MediaEntries ORDER BY Created_At DESC
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
@@ -116,9 +124,11 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
 
     public List<MediaEntry> findByUserId(int userId) {
         List<MediaEntry> entries = new ArrayList<>();
-        String sql = "SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age, " +
-                "AverageRating, Created_By_User_ID, Created_At, Updated_At " +
-                "FROM MediaEntries WHERE Created_By_User_ID = ? ORDER BY Created_At DESC";
+        String sql = """
+                SELECT Entry_ID, Title, Description, MediaType, ReleaseYear, Age,
+                AverageRating, Created_By_User_ID, Created_At, Updated_At
+                FROM MediaEntries WHERE Created_By_User_ID = ? ORDER BY Created_At DESC
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
@@ -183,13 +193,14 @@ public class MediaEntryRepository extends BaseRepository<MediaEntry, Integer> {
 
     public List<MediaEntry> findByGenre(String genre) {
         List<MediaEntry> entries = new ArrayList<>();
-        String sql = "SELECT DISTINCT e.Entry_ID, e.Title, e.Description, e.MediaType, " +
-                "e.ReleaseYear, e.Age, e.AverageRating, e.Created_By_User_ID, " +
-                "e.Created_At, e.Updated_At " +
-                "FROM MediaEntries e " +
-                "JOIN MediaGenres g ON e.Entry_ID = g.Entry_ID " +
-                "WHERE g.Genre ILIKE ? " +
-                "ORDER BY e.Created_At DESC";
+        String sql = """
+            SELECT DISTINCT e.Entry_ID, e.Title, e.Description, e.MediaType, e.ReleaseYear,
+                            e.Age, e.AverageRating, e.Created_By_User_ID, e.Created_At, e.Updated_At
+                            FROM MediaEntries e JOIN MediaGenres g 
+                                ON e.Entry_ID = g.Entry_ID
+                                WHERE g.Genre ILIKE ?
+                                ORDER BY e.Created_At DESC
+        """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, "%" + genre + "%");

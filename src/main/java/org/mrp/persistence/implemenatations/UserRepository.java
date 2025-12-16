@@ -35,7 +35,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
 
     @Override
     public Optional<User> findById(Integer id) {
-        String sql = "SELECT * FROM Users WHERE User_ID = ?";
+        String sql = "SELECT User_ID, Username, Password, Salt FROM Users WHERE User_ID = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
@@ -56,7 +56,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
 
     @Override
     public List<User> findAll() {
-        String sql = "SELECT * FROM Users";
+        String sql = "SELECT User_ID, Username, Password, Salt FROM Users";
         List<User> userList = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             ResultSet rs = statement.executeQuery(sql);
@@ -97,7 +97,7 @@ public class UserRepository extends BaseRepository<User, Integer> {
     }
 
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT * FROM Users WHERE Username = ?";
+        String sql = "SELECT User_ID, Username, Password, Salt FROM Users WHERE Username = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();

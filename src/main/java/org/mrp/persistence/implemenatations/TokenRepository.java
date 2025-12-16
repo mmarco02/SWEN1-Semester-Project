@@ -29,7 +29,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
 
     @Override
     public Optional<UserToken> findById(String tokenString) {
-        String sql = "SELECT * FROM UserTokens WHERE Token = ?";
+        String sql = "SELECT Token, User_ID, Created_At FROM UserTokens WHERE Token = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, tokenString);
             ResultSet rs = statement.executeQuery();
@@ -49,7 +49,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
 
     @Override
     public List<UserToken> findAll() {
-        String sql = "SELECT * FROM UserTokens";
+        String sql = "SELECT Token, User_ID, Created_At FROM UserTokens";
         List<UserToken> tokens = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             ResultSet rs = statement.executeQuery();
@@ -99,7 +99,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
     }
 
     public Optional<UserToken> findByUserId(Integer userId) {
-        String sql = "SELECT * FROM UserTokens WHERE User_ID = ?";
+        String sql = "SELECT Token, User_ID, Created_At FROM UserTokens WHERE User_ID = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             UserToken userToken = null;
             statement.setInt(1, userId);

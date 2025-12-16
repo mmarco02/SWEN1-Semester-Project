@@ -15,8 +15,11 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     @Override
     public void save(Rating entity) {
-        String sql = "INSERT INTO MediaRatings (Entry_ID, User_ID, Score) " +
-                "VALUES (?, ?, ?) RETURNING Rating_ID, Created_At, Updated_At";
+        String sql = """
+                INSERT INTO MediaRatings (Entry_ID, User_ID, Score)
+                VALUES (?, ?, ?) RETURNING Rating_ID, Created_At, Updated_At
+                """;
+
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, entity.getMediaEntryId());
@@ -34,8 +37,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     }
 
     public void update(Rating entity) {
-        String sql = "UPDATE MediaRatings SET Score = ?, Updated_At = CURRENT_TIMESTAMP " +
-                "WHERE Rating_ID = ?";
+        String sql = """
+                UPDATE MediaRatings SET Score = ?, Updated_At = CURRENT_TIMESTAMP
+                WHERE Rating_ID = ?
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setDouble(1, entity.getStarValue());
@@ -48,8 +53,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     @Override
     public Optional<Rating> findById(Integer id) {
-        String sql = "SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At " +
-                "FROM MediaRatings WHERE Rating_ID = ?";
+        String sql = """
+                SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At 
+                FROM MediaRatings WHERE Rating_ID = ?
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -65,8 +72,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     }
 
     public Optional<Rating> findByEntryAndUser(int entryId, int userId) {
-        String sql = "SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At " +
-                "FROM MediaRatings WHERE Entry_ID = ? AND User_ID = ?";
+        String sql = """
+                SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At
+                FROM MediaRatings WHERE Entry_ID = ? AND User_ID = ?
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, entryId);
@@ -85,8 +94,11 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     @Override
     public List<Rating> findAll() {
         List<Rating> ratings = new ArrayList<>();
-        String sql = "SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At " +
-                "FROM MediaRatings ORDER BY Created_At DESC";
+        String sql = """
+            SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At
+            FROM MediaRatings ORDER BY Created_At DESC
+
+            """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
@@ -101,8 +113,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public List<Rating> findByEntryId(int entryId) {
         List<Rating> ratings = new ArrayList<>();
-        String sql = "SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At " +
-                "FROM MediaRatings WHERE Entry_ID = ? ORDER BY Created_At DESC";
+        String sql = """
+                SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At\s
+                FROM MediaRatings WHERE Entry_ID = ? ORDER BY Created_At DESC
+                """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, entryId);
@@ -118,8 +132,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public List<Rating> findByUserId(int userId) {
         List<Rating> ratings = new ArrayList<>();
-        String sql = "SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At " +
-                "FROM MediaRatings WHERE User_ID = ? ORDER BY Created_At DESC";
+        String sql = """
+                SELECT Rating_ID, Entry_ID, User_ID, Score, Created_At, Updated_At
+                FROM MediaRatings WHERE User_ID = ? ORDER BY Created_At DESC
+            """;
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
