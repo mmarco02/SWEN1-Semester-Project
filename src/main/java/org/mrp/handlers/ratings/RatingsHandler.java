@@ -2,13 +2,13 @@ package org.mrp.handlers.ratings;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.mrp.http.HttpStatus;
-import org.mrp.service.Utils.PathUtils;
+import org.mrp.service.utils.PathUtils;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class RatingsHandler {
     private static final Pattern ID_PATTERN = PathUtils.createPatternFromTemplate("/api/ratings/{id}");

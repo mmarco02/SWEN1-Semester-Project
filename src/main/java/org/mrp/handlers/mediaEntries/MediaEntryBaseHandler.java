@@ -9,7 +9,6 @@ import org.mrp.http.HttpStatus;
 import org.mrp.persistence.*;
 import org.mrp.persistence.implemenatations.*;
 import org.mrp.service.MediaService;
-import org.mrp.service.RatingService;
 import org.mrp.service.UserService;
 
 import java.io.IOException;
@@ -22,8 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class MediaEntryBaseHandler {
     private static final ObjectMapper mapper = new ObjectMapper();

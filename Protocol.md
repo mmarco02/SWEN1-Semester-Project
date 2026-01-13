@@ -63,6 +63,17 @@ project
 - **userId**: `int`
 - **createdAt**: `Timestamp`
 
+### Favorite
+- **id**: `int`
+- **entryId**: `int`
+- **userId**: `int`
+- **createdAt**: `Timestamp`
+
+### Like
+- **id**: `int`
+- **ratingId**: `int`
+- **userId**: `int`
+
 All domain classes implement the Builder Pattern
 using a nested builder class and a `builder()` method,
 providing a uniform way to create objects and makes them expandable.
@@ -79,10 +90,15 @@ so that I can use path variables (for example like Spring Controllers)
 #### AuthUtils <br>
 - Has Helper functions to get Bearer Token
 #### UserService
-- Contains Functions to access CRUD operations in Repositories,
+- Contains functions to access CRUD operations in Repositories,
 create and validate Tokens and other utility methods.
 #### MediaService
-- Contains Functions to access MediaRepository and helper functions for Ratings
+- Contains functions to access MediaRepository and helper functions for Ratings
+#### RatingService
+- Contains functions access the RatingRepository and like ratings
+#### FavoriteService
+- Contains functions to access the FavoriteRepository
+
 
 ## Persistence
 For my structure regarding persistence i created a Repository Interface
@@ -115,9 +131,10 @@ I have made my own `PathUtils` Class which has methods to create Regex Pattern l
 `/api/users/(\d+)"/profile` so when creating the context in my `Server` Class i can write URLs for Endpoints like mentioned earlier.
 
 ### Token Authentication
-Whenever a user that is already registered logs in successfully, a token consisting of the username and a random UUID is created
-(e.g. user1-abc123), this token must be sent as a HTTP Authentication Bearer for each following request.
-For this i persists the Tokens in the Database with the creation date.
+Whenever a user that is already registered logs in successfully, a token consisting of the username and a random UUID with length 8 is created
+(e.g. user1-abcd1234), this token must be sent as a HTTP Authentication Bearer for each following request.
+I used a randomUUID after the "username-" because it makes more sense than having "mrpToken" due to safety issues.
+For this I persist the Tokens in the Database with the creation date.
 Each Token has an expiration time of 24 hours, after which the User has to log in again.
 If a user already has an existing token and logs in again, the old token is overwritten by the new one.
 
@@ -185,6 +202,8 @@ So far it tests: <br>
 
 ## Time Estimation
 
+Intermediate Version:
+
 | Task                         | Estimated Hours |                                                                     |
 |------------------------------|-----------------|---------------------------------------------------------------------|
 | **Project Setup**            | 2               | Setup of project structure, dependencies, and docker.               |
@@ -196,3 +215,17 @@ So far it tests: <br>
 | **Services and Utils**       | 2.5             | writing util and Service classes                                    |
 | **Testing**                  | 3.5             | writing tests, fixing and refactoring tests.                        |
 | **Protocol**                 | 2.5             | writing the protocol                       |
+
+Final Version:
+
+| Task                         | Estimated Hours |                                                                     |
+|------------------------------|-----------------|---------------------------------------------------------------------|
+| **Project Setup**            | 2               | Setup of project structure, dependencies, and docker.               |
+| **Domain**                   | 1.5             | domain classes, JSON serialization some helper functions.           |
+| **Database**                 | 2.5             | Creating `init.sql`, defining tables, relationships etc..           |
+| **Repositories**             | 4.5             | designing structure for `BaseRepository`and Repository interface.   |
+| **HTTP Server and Handlers** | about 14.5      | implementing custom routing, request/response handling and endpoints. |
+| **Authentication**           | 2.5             | token generation, validation, etc. and saving user credentials.     |
+| **Services and Utils**       | 4               | writing util and Service classes                                    |
+| **Testing**                  | 7               | writing tests, fixing and refactoring tests.                        |
+| **Protocol**                 | 3               | writing the protocol                                                |

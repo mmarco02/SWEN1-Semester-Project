@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class MediaEntryIdHandler {
     private static final ObjectMapper mapper = new ObjectMapper();

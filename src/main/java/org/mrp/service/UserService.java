@@ -8,8 +8,8 @@ import org.mrp.domain.UserToken;
 import org.mrp.persistence.implemenatations.TokenRepository;
 import org.mrp.persistence.implemenatations.UserProfileRepository;
 import org.mrp.persistence.implemenatations.UserRepository;
-import org.mrp.service.Utils.AuthUtils;
-import org.mrp.service.Utils.HashUtils;
+import org.mrp.service.utils.AuthUtils;
+import org.mrp.service.utils.HashUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;

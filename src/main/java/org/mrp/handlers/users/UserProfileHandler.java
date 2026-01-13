@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class UserProfileHandler {
     private static final ObjectMapper mapper = new ObjectMapper();

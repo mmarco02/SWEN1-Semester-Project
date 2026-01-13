@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class UserLoginHandler {
     private static final ObjectMapper mapper = new ObjectMapper();

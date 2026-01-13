@@ -10,7 +10,6 @@ import org.mrp.persistence.DatabaseConnection;
 import org.mrp.persistence.implemenatations.*;
 import org.mrp.service.FavoriteService;
 import org.mrp.service.MediaService;
-import org.mrp.service.RatingService;
 import org.mrp.service.UserService;
 
 import java.io.IOException;
@@ -20,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class MediaEntryFavoriteHandler {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -113,7 +112,7 @@ public class MediaEntryFavoriteHandler {
         }
 
         try {
-            if(user.getId() != mediaOpt.get().getCreatedByUserId()){
+            if(user.getId() == mediaOpt.get().getCreatedByUserId()){
                 sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
                         HttpStatus.FORBIDDEN.getDescription(), "text/plain");
                 return;
@@ -163,7 +162,7 @@ public class MediaEntryFavoriteHandler {
                 return;
             }
 
-            if(user.getId() != entry.get().getCreatedByUserId()){
+            if(user.getId() == entry.get().getCreatedByUserId()){
                 sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
                         HttpStatus.FORBIDDEN.getDescription(), "text/plain");
                 return;

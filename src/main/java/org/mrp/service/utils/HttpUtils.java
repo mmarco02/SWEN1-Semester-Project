@@ -1,4 +1,4 @@
-package org.mrp.service.Utils;
+package org.mrp.service.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;

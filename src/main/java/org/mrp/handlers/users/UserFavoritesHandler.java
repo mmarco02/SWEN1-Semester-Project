@@ -19,8 +19,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mrp.service.Utils.HttpUtils.sendJsonResponse;
-import static org.mrp.service.Utils.HttpUtils.sendResponse;
+import static org.mrp.service.utils.HttpUtils.sendJsonResponse;
+import static org.mrp.service.utils.HttpUtils.sendResponse;
 
 public class UserFavoritesHandler {
 
