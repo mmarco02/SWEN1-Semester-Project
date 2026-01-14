@@ -112,11 +112,11 @@ public class MediaEntryFavoriteHandler {
         }
 
         try {
-            if(user.getId() == mediaOpt.get().getCreatedByUserId()){
-                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
-                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
-                return;
-            }
+//            if(user.getId() == mediaOpt.get().getCreatedByUserId()){
+//                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+//                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+//                return;
+//            }
 
             Favorite favorite = Favorite.builder()
                     .entryId(entryId)
@@ -162,11 +162,11 @@ public class MediaEntryFavoriteHandler {
                 return;
             }
 
-            if(user.getId() == entry.get().getCreatedByUserId()){
-                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
-                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
-                return;
-            }
+//            if(user.getId() == entry.get().getCreatedByUserId()){
+//                sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
+//                        HttpStatus.FORBIDDEN.getDescription(), "text/plain");
+//                return;
+//            }
 
             boolean removed = favoriteService.deleteByUserAndEntry(user.getId(), entryId);
 

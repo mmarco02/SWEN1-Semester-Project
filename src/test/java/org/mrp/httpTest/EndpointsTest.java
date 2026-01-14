@@ -272,11 +272,11 @@ class EndpointsTest {
 
     @Test
     @Order(12)
-    void ownerTryingToFavoriteOwnMedia_ShouldReturn403() throws Exception {
+    void ownerTryingToFavoriteOwnMedia_ShouldWork() throws Exception {
         HttpResponse<String> response = TestSetup.favoriteMedia(token, createdMediaId);
 
         System.out.println("Owner Favorite Own Media Response: " + response.body());
-        assertEquals(403, response.statusCode());
+        assertEquals(201, response.statusCode());
     }
 
     @Test
