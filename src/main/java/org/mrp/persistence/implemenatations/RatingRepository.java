@@ -20,7 +20,6 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
                 VALUES (?, ?, ?, ?) RETURNING Rating_ID, Updated_At
                 """;
 
-
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, entity.getMediaEntryId());
             statement.setInt(2, entity.getUserId());
@@ -30,11 +29,7 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 entity.setId(rs.getInt("Rating_ID"));
-<<<<<<< HEAD
                 entity.setUpdatedAt(rs.getTimestamp("Updated_At"));
-=======
-                entity.setUpdatedAt(rs.getTimestamp("Created_At").toLocalDateTime());
->>>>>>> d865671 (removed CreatedAt since 2 timestamps are not needed for Rating, edited Domain class and Created Handlers for Ratings)
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save rating", e);
@@ -43,23 +38,15 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
 
     public void update(Rating rating) {
         String sql = """
-<<<<<<< HEAD
                 UPDATE MediaRatings SET StarValue = ?, Comment = ?, Updated_At = CURRENT_TIMESTAMP, Is_Confirmed = ?
-=======
-                UPDATE MediaRatings SET Score = ?, Comment = ?, Updated_At = CURRENT_TIMESTAMP
->>>>>>> d865671 (removed CreatedAt since 2 timestamps are not needed for Rating, edited Domain class and Created Handlers for Ratings)
                 WHERE Rating_ID = ?
                 """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDouble(1, rating.getStarValue());
-<<<<<<< HEAD
             statement.setString(2, rating.getComment());
             statement.setBoolean(3, rating.isConfirmed());
             statement.setInt(4, rating.getId());
-=======
-            statement.setInt(2, rating.getId());
->>>>>>> d865671 (removed CreatedAt since 2 timestamps are not needed for Rating, edited Domain class and Created Handlers for Ratings)
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update rating", e);
@@ -112,7 +99,6 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
         String sql = """
             SELECT Rating_ID, Entry_ID, User_ID, StarValue, Comment, Updated_At, Is_Confirmed
             FROM MediaRatings ORDER BY Updated_At DESC
-
             """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -204,15 +190,10 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
         rating.setId(rs.getInt("Rating_ID"));
         rating.setMediaEntryId(rs.getInt("Entry_ID"));
         rating.setUserId(rs.getInt("User_ID"));
-<<<<<<< HEAD
         rating.setStarValue(rs.getInt("StarValue"));
         rating.setComment(rs.getString("Comment"));
         rating.setUpdatedAt(rs.getTimestamp("Updated_At"));
         rating.setConfirmed(rs.getBoolean("Is_Confirmed"));
-=======
-        rating.setStarValue(rs.getInt("Score"));
-        rating.setUpdatedAt(rs.getTimestamp("Created_At").toLocalDateTime());
->>>>>>> d865671 (removed CreatedAt since 2 timestamps are not needed for Rating, edited Domain class and Created Handlers for Ratings)
         return rating;
     }
 }
