@@ -1,8 +1,8 @@
 package org.mrp.domain;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-public record UserToken(String token, int userId, Timestamp createdAt) {
+public record UserToken(String token, int userId, LocalDateTime createdAt) {
     public String token() {
         return token;
     }
@@ -11,7 +11,7 @@ public record UserToken(String token, int userId, Timestamp createdAt) {
         return userId;
     }
 
-    public Timestamp createdAt() {
+    public LocalDateTime createdAt() {
         return createdAt;
     }
 
@@ -31,7 +31,7 @@ public record UserToken(String token, int userId, Timestamp createdAt) {
     public static class UserTokenBuilder {
         private String token;
         private Integer userId;
-        private Timestamp createdAt;
+        private LocalDateTime createdAt;
 
         public UserTokenBuilder token(String token) {
             this.token = token;
@@ -43,7 +43,7 @@ public record UserToken(String token, int userId, Timestamp createdAt) {
             return this;
         }
 
-        public UserTokenBuilder createdAt(Timestamp createdAt) {
+        public UserTokenBuilder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
         }

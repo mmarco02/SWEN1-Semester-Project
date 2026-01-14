@@ -14,6 +14,7 @@ import org.mrp.service.utils.HashUtils;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -69,7 +70,7 @@ public class UserService {
             }
 
             String token = generateToken(username);
-            UserToken userToken = new UserToken(token, user.getId(), Timestamp.from(Instant.now()));
+            UserToken userToken = new UserToken(token, user.getId(), LocalDateTime.now());
             if(tokenRepository.findByUserId(user.getId()).isPresent()){
                 tokenRepository.deleteByUserId(user.getId());
             }
@@ -125,9 +126,9 @@ public class UserService {
     }
 
     private boolean isTokenExpired(UserToken token) {
-        Instant expirationTime = token.createdAt().toInstant()
-                .plus(TOKEN_EXPIRATION_HOURS, ChronoUnit.HOURS);
-        return Instant.now().isAfter(expirationTime);
+        LocalDateTime expirationTime = token.createdAt()
+                .plusHours(TOKEN_EXPIRATION_HOURS);
+        return LocalDateTime.now().isAfter(expirationTime);
     }
 
     public Optional<UserProfile> getUserProfileById(int userId) {
@@ -142,7 +143,7 @@ public class UserService {
 
     public void cleanupExpiredTokens() {
         for (UserToken userToken : tokenRepository.findAll()) {
-            if(userToken.createdAt().before(Timestamp.valueOf(LocalDateTime.now().plusHours(TOKEN_EXPIRATION_HOURS)))) {
+            if(userToken.createdAt().isBefore(LocalDateTime.now().plusHours(TOKEN_EXPIRATION_HOURS))) {
                 tokenRepository.deleteById(userToken.token());
             }
         }

@@ -18,6 +18,7 @@ import org.mrp.service.utils.HashUtils;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,7 @@ class UserTests {
         testToken = UserToken.builder()
                 .token("testuser-abc123")
                 .userId(1)
-                .createdAt(Timestamp.from(Instant.now()))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -191,7 +192,7 @@ class UserTests {
 
     @Test
     void testValidateTokenFailsWhenTokenExpired() {
-        Timestamp oldTimestamp = Timestamp.from(Instant.now().minus(25, ChronoUnit.HOURS));
+        LocalDateTime oldTimestamp = LocalDateTime.now().minusHours(25);
         UserToken expiredToken = new UserToken("expiredToken", 1, oldTimestamp);
 
         when(tokenRepository.findById("expiredToken")).thenReturn(Optional.of(expiredToken));
@@ -266,10 +267,10 @@ class UserTests {
 
     @Test
     void testCleanupExpiredTokens() {
-        Timestamp expiredTimestamp = Timestamp.from(Instant.now().minus(25, ChronoUnit.HOURS));
+        LocalDateTime expiredTimestamp = LocalDateTime.now().minusHours(25);
         UserToken expiredToken = new UserToken("expired", 1, expiredTimestamp);
 
-        Timestamp validTimestamp = Timestamp.from(Instant.now().minus(1, ChronoUnit.HOURS));
+        LocalDateTime validTimestamp = LocalDateTime.now().minusHours(1);
         UserToken validToken = new UserToken("valid", 2, validTimestamp);
 
         when(tokenRepository.findAll()).thenReturn(List.of(expiredToken, validToken));

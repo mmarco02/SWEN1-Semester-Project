@@ -2,6 +2,7 @@ package org.mrp.persistence.implemenatations;
 
 import org.mrp.domain.UserToken;
 import org.mrp.persistence.BaseRepository;
+import org.mrp.service.utils.DateTimeUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, userToken.token());
             statement.setInt(2, userToken.userId());
-            statement.setTimestamp(3, userToken.createdAt());
+            statement.setTimestamp(3, DateTimeUtil.toTimestamp(userToken.createdAt()));
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -37,7 +38,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
                 UserToken userToken = UserToken.builder()
                         .token(rs.getString("Token"))
                         .userId(rs.getInt("User_ID"))
-                        .createdAt(rs.getTimestamp("Created_At"))
+                        .createdAt(DateTimeUtil.toLocalDateTime(rs.getTimestamp("Created_At")))
                         .build();
                 return Optional.of(userToken);
             }
@@ -57,7 +58,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
                 UserToken userToken = UserToken.builder()
                         .token(rs.getString("Token"))
                         .userId(rs.getInt("User_ID"))
-                        .createdAt(rs.getTimestamp("Created_At"))
+                        .createdAt(DateTimeUtil.toLocalDateTime(rs.getTimestamp("Created_At")))
                         .build();
                 tokens.add(userToken);
             }
@@ -108,7 +109,7 @@ public class TokenRepository extends BaseRepository<UserToken, String> {
                 userToken = UserToken.builder()
                         .token(rs.getString("Token"))
                         .userId(rs.getInt("User_ID"))
-                        .createdAt(rs.getTimestamp("Created_At"))
+                        .createdAt(DateTimeUtil.toLocalDateTime(rs.getTimestamp("Created_At")))
                         .build();
                 return Optional.of(userToken);
             }

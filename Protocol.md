@@ -44,7 +44,7 @@ project
 - **mediaEntryId**: `int`
 - **starValue**: `int` (1–5)
 - **comment**: `String`
-- **timeStamp**: `Timestamp`
+- **timeStamp**: `LocalDateTime`
 
 #### User
 - **id**: `int`
@@ -61,13 +61,13 @@ project
 #### UserToken
 - **token**: `String`
 - **userId**: `int`
-- **createdAt**: `Timestamp`
+- **createdAt**: `LocalDateTime`
 
 ### Favorite
 - **id**: `int`
 - **entryId**: `int`
 - **userId**: `int`
-- **createdAt**: `Timestamp`
+- **createdAt**: `LocalDateTime`
 
 ### Like
 - **id**: `int`

@@ -6,8 +6,8 @@ import org.mrp.domain.User;
 import org.mrp.persistence.implemenatations.LikeRepository;
 import org.mrp.persistence.implemenatations.RatingRepository;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +69,7 @@ public class RatingService {
         rating.setUserId(userId);
         rating.setStarValue(stars);
         rating.setComment(comment);
-        rating.setUpdatedAt(Timestamp.from(Instant.now()));
+        rating.setUpdatedAt(LocalDateTime.now());
         ratingRepository.save(rating);
 
         return rating;

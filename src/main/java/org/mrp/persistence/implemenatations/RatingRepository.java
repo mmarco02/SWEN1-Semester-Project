@@ -16,9 +16,9 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
     @Override
     public void save(Rating entity) {
         String sql = """
-                INSERT INTO MediaRatings (Entry_ID, User_ID, StarValue, Comment)
-                VALUES (?, ?, ?, ?) RETURNING Rating_ID, Updated_At
-                """;
+            INSERT INTO MediaRatings (Entry_ID, User_ID, StarValue, Comment)
+            VALUES (?, ?, ?, ?) RETURNING Rating_ID, Updated_At
+            """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, entity.getMediaEntryId());
@@ -29,7 +29,12 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 entity.setId(rs.getInt("Rating_ID"));
-                entity.setUpdatedAt(rs.getTimestamp("Updated_At"));
+
+                // Convert Timestamp to LocalDateTime
+                Timestamp timestamp = rs.getTimestamp("Updated_At");
+                if (timestamp != null) {
+                    entity.setUpdatedAt(timestamp.toLocalDateTime());
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save rating", e);
@@ -192,7 +197,13 @@ public class RatingRepository extends BaseRepository<Rating, Integer> {
         rating.setUserId(rs.getInt("User_ID"));
         rating.setStarValue(rs.getInt("StarValue"));
         rating.setComment(rs.getString("Comment"));
-        rating.setUpdatedAt(rs.getTimestamp("Updated_At"));
+
+        // convert Timestamp to LocalDateTime
+        Timestamp timestamp = rs.getTimestamp("Updated_At");
+        if (timestamp != null) {
+            rating.setUpdatedAt(timestamp.toLocalDateTime());
+        }
+
         rating.setConfirmed(rs.getBoolean("Is_Confirmed"));
         return rating;
     }

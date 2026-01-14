@@ -1,6 +1,6 @@
 package org.mrp.domain;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Rating extends JsonObject {
     private int id;
@@ -9,7 +9,7 @@ public class Rating extends JsonObject {
     //starValue 1-5
     private int starValue;
     private String comment;
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
     private boolean isConfirmed;
 
     public int getId() {
@@ -52,11 +52,11 @@ public class Rating extends JsonObject {
         this.comment = comment;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -113,7 +113,7 @@ public class Rating extends JsonObject {
             return this;
         }
 
-        public RatingBuilder updatedAt(Timestamp updatedAt) {
+        public RatingBuilder updatedAt(LocalDateTime updatedAt) {
             rating.updatedAt = updatedAt;
             return this;
         }

@@ -1,12 +1,12 @@
 package org.mrp.domain;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Favorite extends JsonObject {
     private int id;
     private int entryId;
     private int userId;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     public int getId() {
         return id;
@@ -32,11 +32,11 @@ public class Favorite extends JsonObject {
         this.userId = userId;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -72,7 +72,7 @@ public class Favorite extends JsonObject {
             return this;
         }
 
-        public FavoriteBuilder createdAt(Timestamp createdAt) {
+        public FavoriteBuilder createdAt(LocalDateTime createdAt) {
             favorite.createdAt = createdAt;
             return this;
         }

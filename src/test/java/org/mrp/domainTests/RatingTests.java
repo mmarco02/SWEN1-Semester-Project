@@ -14,6 +14,8 @@ import org.mrp.service.RatingService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +48,7 @@ class RatingTests {
                 .userId(10)
                 .starValue(4)
                 .comment("Great movie!")
-                .updatedAt(Timestamp.from(Instant.now()))
+                .updatedAt(LocalDateTime.now())
                 .isConfirmed(false)
                 .build();
 

@@ -1,13 +1,23 @@
 package org.mrp.service.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 public class HttpUtils {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper mapper = createConfiguredObjectMapper();
+
+    private static ObjectMapper createConfiguredObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        // reegister JavaTimeModule to handle Java 8 date/time types
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
+    }
 
     public static void sendResponse(HttpExchange exchange, int statusCode, String response, String contentType)
             throws IOException {
@@ -26,9 +36,13 @@ public class HttpUtils {
         }
     }
 
-    public static void sendJsonResponse(HttpExchange exchange, int statusCode, Object responseObject)
-            throws IOException {
-        String jsonResponse = OBJECT_MAPPER.writeValueAsString(responseObject);
-        sendResponse(exchange, statusCode, jsonResponse, "application/json");
+    public static void sendJsonResponse(HttpExchange exchange, int statusCode, Object response) throws IOException {
+        String jsonResponse = mapper.writeValueAsString(response);
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(statusCode, jsonResponse.getBytes().length);
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(jsonResponse.getBytes());
+        }
     }
 }

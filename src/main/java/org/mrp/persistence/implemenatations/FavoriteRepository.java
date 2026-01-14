@@ -2,8 +2,10 @@ package org.mrp.persistence.implemenatations;
 
 import org.mrp.domain.Favorite;
 import org.mrp.persistence.BaseRepository;
+import org.mrp.service.utils.DateTimeUtil;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +19,9 @@ public class FavoriteRepository extends BaseRepository<Favorite, Integer> {
     @Override
     public void save(Favorite favorite) {
         String sql = """
-            INSERT INTO FavoriteMedia (Entry_ID, User_ID)
-            VALUES (?, ?) RETURNING Favorite_ID, Created_At
-            """;
+        INSERT INTO FavoriteMedia (Entry_ID, User_ID)
+        VALUES (?, ?) RETURNING Favorite_ID, Created_At
+        """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, favorite.getEntryId());
@@ -28,7 +30,8 @@ public class FavoriteRepository extends BaseRepository<Favorite, Integer> {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 int favoriteId = rs.getInt("Favorite_ID");
-                Timestamp createdAt = rs.getTimestamp("Created_At");
+                Timestamp timestamp = rs.getTimestamp("Created_At");
+                LocalDateTime createdAt = DateTimeUtil.toLocalDateTime(timestamp);
                 favorite.setId(favoriteId);
                 favorite.setCreatedAt(createdAt);
             } else {
@@ -183,11 +186,14 @@ public class FavoriteRepository extends BaseRepository<Favorite, Integer> {
     }
 
     private Favorite mapResultSetToFavorite(ResultSet rs) throws SQLException {
+        Timestamp timestamp = rs.getTimestamp("Created_At");
+        LocalDateTime createdAt = DateTimeUtil.toLocalDateTime(timestamp);
+
         return Favorite.builder()
                 .id(rs.getInt("Favorite_ID"))
                 .entryId(rs.getInt("Entry_ID"))
                 .userId(rs.getInt("User_ID"))
-                .createdAt(rs.getTimestamp("Created_At"))
+                .createdAt(createdAt)
                 .build();
     }
 }

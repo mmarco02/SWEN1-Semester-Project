@@ -19,6 +19,7 @@ import org.mrp.service.MediaService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +83,7 @@ class MediaTests {
                 .id(1)
                 .entryId(100)
                 .userId(1)
-                .createdAt(Timestamp.from(Instant.now()))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -411,7 +412,7 @@ class MediaTests {
         Favorite favoriteWithoutId = Favorite.builder()
                 .entryId(100)
                 .userId(1)
-                .createdAt(Timestamp.from(Instant.now()))
+                .createdAt(LocalDateTime.now())
                 .build();
 
         doAnswer(invocation -> {
