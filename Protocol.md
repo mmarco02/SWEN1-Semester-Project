@@ -11,18 +11,30 @@ project
 │   └───handlers
 │   │   │
 │   │   └──mediaEntries
-│   │   │
 │   │   └──users
+│   │   └──ratings
 │   │    
 │   └───http
 │   │    
 │   └───persistence
+│   │   │ 
+│   │   └───implementations
 │   │    
 │   └───service
-│       
+│   │   │ 
+│   │   └───utils
+│   │    
 └───resources 
-    │
-    └───db  
+│   │
+│   └───db  
+│
+└───test
+│   │
+│   └───org.mrp
+│       │
+│       └───domainTests
+│       │
+│       └───httpTests
 ```
 
 ## Domain Objects
@@ -218,14 +230,12 @@ Intermediate Version:
 
 Final Version:
 
-| Task                         | Estimated Hours |                                                                     |
-|------------------------------|-----------------|---------------------------------------------------------------------|
-| **Project Setup**            | 2               | Setup of project structure, dependencies, and docker.               |
-| **Domain**                   | 1.5             | domain classes, JSON serialization some helper functions.           |
-| **Database**                 | 2.5             | Creating `init.sql`, defining tables, relationships etc..           |
-| **Repositories**             | 4.5             | designing structure for `BaseRepository`and Repository interface.   |
-| **HTTP Server and Handlers** | about 14.5      | implementing custom routing, request/response handling and endpoints. |
-| **Authentication**           | 2.5             | token generation, validation, etc. and saving user credentials.     |
-| **Services and Utils**       | 4               | writing util and Service classes                                    |
-| **Testing**                  | 7               | writing tests, fixing and refactoring tests.                        |
-| **Protocol**                 | 3               | writing the protocol                                                |
+| Task                         | Estimated Hours |                                                                          |
+|------------------------------|-----------------|--------------------------------------------------------------------------|
+| **Domain**                   | 2               | Adding new Domain Classes, Changing from Timestamp to LocalDateTime      |
+| **Database**                 | 2               | Writing new Tables and adding Indexes                                    |
+| **Repositories**             | 2               | Writing new Repositories                                                 |
+| **HTTP Server and Handlers** | about 8         | Writing all the new Handlers and writing Service and Util classes for it |
+| **Services and Utils**       | 4               | writing util and Service classes                                         |
+| **Testing**                  | 7               | writing tests, fixing and refactoring tests.                             |
+| **Protocol**                 | 1.25            | writing the protocol                                                     |

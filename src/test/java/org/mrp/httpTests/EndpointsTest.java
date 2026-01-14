@@ -1,13 +1,10 @@
-package org.mrp.httpTest;
+package org.mrp.httpTests;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
-import org.mrp.domain.User;
-import org.mrp.http.HttpStatus;
 import org.mrp.http.Server;
 import org.mrp.persistence.DatabaseConnection;
-import org.mrp.service.utils.HashUtils;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;
