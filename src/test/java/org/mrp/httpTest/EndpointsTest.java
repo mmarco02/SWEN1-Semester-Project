@@ -509,7 +509,7 @@ class EndpointsTest {
 
     @Test
     @Order(28)
-    void ownerTryingToLikeOwnRating_ShouldReturn400() throws Exception {
+    void ownerTryingToLikeOwnRating_ShouldReturn403() throws Exception {
         HttpResponse<String> response = TestSetup.likeRating(token, createdRatingId);
 
         System.out.println("Owner Like Own Rating Response: " + response.body());
