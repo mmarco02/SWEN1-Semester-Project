@@ -29,12 +29,12 @@ project
 │   └───db  
 │
 └───test
-│   │
-│   └───org.mrp
-│       │
-│       └───domainTests
-│       │
-│       └───httpTests
+    │
+    └───org.mrp
+        │
+        └───domainTests
+        │
+        └───httpTests
 ```
 
 ## Domain Objects
