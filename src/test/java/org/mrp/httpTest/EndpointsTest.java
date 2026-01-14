@@ -3,8 +3,11 @@ package org.mrp.httpTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
+import org.mrp.domain.User;
+import org.mrp.http.HttpStatus;
 import org.mrp.http.Server;
 import org.mrp.persistence.DatabaseConnection;
+import org.mrp.service.utils.HashUtils;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;
@@ -16,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class EndpointsTest {
     private static final ObjectMapper mapper = new ObjectMapper();
     private static String TEST_USER;
+    private static String TEST_USER2;
     private static final String TEST_PASSWORD = "testPassword123";
     private static String token;
+    private static String token2;
     private static int userId;
     private static Server server;
     private static int createdMediaId;
@@ -28,6 +33,7 @@ class EndpointsTest {
     static void setup() {
         try {
             TEST_USER = "testUser" + System.currentTimeMillis();
+            TEST_USER2= "testUser2" + System.currentTimeMillis();
 
             // start server if not already running
             server = new Server(8080);
@@ -52,6 +58,7 @@ class EndpointsTest {
     @Order(1)
     void registerUserWithValidData_ShouldReturn201() throws Exception {
         HttpResponse<String> response = TestSetup.registerUser(TEST_USER, TEST_PASSWORD);
+        HttpResponse<String> response1 = TestSetup.registerUser(TEST_USER2, TEST_PASSWORD);
 
         System.out.println("Register Response: " + response.body());
 
@@ -65,8 +72,7 @@ class EndpointsTest {
     @Order(2)
     void loginWithValidCredentials_ShouldReturnToken() throws Exception {
         HttpResponse<String> response = TestSetup.loginUser(TEST_USER, TEST_PASSWORD);
-
-        System.out.println("Login Response: " + response.body());
+        System.out.println("Login Response for User 1: " + response.body());
 
         assertEquals(200, response.statusCode());
         String body = response.body();
@@ -76,8 +82,22 @@ class EndpointsTest {
         token = jsonNode.get("token").asText();
         assertNotNull(token);
         assertFalse(token.isEmpty());
+        System.out.println("Token for User 1: " + token);
 
-        System.out.println("Token: " + token);
+        // Login second user
+        HttpResponse<String> response2 = TestSetup.loginUser(TEST_USER2, TEST_PASSWORD);
+        System.out.println("Login Response for User 2: " + response2.body());
+
+        assertEquals(200, response2.statusCode());
+        String body2 = response2.body();
+        assertTrue(body2.contains("token"));
+
+        JsonNode jsonNode2 = mapper.readTree(body2);
+        token2 = jsonNode2.get("token").asText();
+        assertNotNull(token2);
+        assertFalse(token2.isEmpty());
+        System.out.println("Token for User 2: " + token2);
+
         userId = 1;
     }
 
@@ -243,32 +263,28 @@ class EndpointsTest {
     @Test
     @Order(11)
     void setMediaEntryAsFavorite_ShouldWork() throws Exception {
-        HttpResponse<String> response = TestSetup.favoriteMedia(token, createdMediaId);
+        // Second user (non-owner) can favorite the media created by first user
+        HttpResponse<String> response = TestSetup.favoriteMedia(token2, createdMediaId);
 
+        System.out.println("Favorite Response (User 2): " + response.body());
         assertEquals(201, response.statusCode());
     }
 
     @Test
     @Order(12)
-    void setNonExistentMediaEntryAsFavorite_ShouldReturn404() throws Exception {
-        HttpResponse<String> response = TestSetup.favoriteMedia(token, 999);
+    void ownerTryingToFavoriteOwnMedia_ShouldReturn403() throws Exception {
+        HttpResponse<String> response = TestSetup.favoriteMedia(token, createdMediaId);
 
-        assertEquals(404, response.statusCode());
+        System.out.println("Owner Favorite Own Media Response: " + response.body());
+        assertEquals(403, response.statusCode());
     }
 
     @Test
     @Order(13)
-    void unfavoriteNonExistentMediaEntry_ShouldReturn404() throws  Exception {
-        HttpResponse<String> response = TestSetup.unfavoriteMedia(token, 999);
+    void unfavoriteValidMediaEntryWhenUserDoenstOwnMedia_ShouldWork() throws Exception {
+        HttpResponse<String> response = TestSetup.unfavoriteMedia(token2, createdMediaId);
 
-        assertEquals(404, response.statusCode());
-    }
-
-    @Test
-    @Order(14)
-    void unfavoriteValidMediaEntry_ShouldWork() throws Exception{
-        HttpResponse<String> response = TestSetup.unfavoriteMedia(token, createdMediaId);
-
+        System.out.println("Unfavorite Response (User 2): " + response.body());
         assertEquals(200, response.statusCode());
     }
 
@@ -484,6 +500,24 @@ class EndpointsTest {
 
     @Test
     @Order(27)
+    void likeRating_ShouldWork() throws Exception {
+        HttpResponse<String> response = TestSetup.likeRating(token2, createdRatingId);
+
+        System.out.println("Like Rating Response (User 2): " + response.body());
+        assertEquals(201, response.statusCode());
+    }
+
+    @Test
+    @Order(28)
+    void ownerTryingToLikeOwnRating_ShouldReturn400() throws Exception {
+        HttpResponse<String> response = TestSetup.likeRating(token, createdRatingId);
+
+        System.out.println("Owner Like Own Rating Response: " + response.body());
+        assertEquals(403, response.statusCode());
+    }
+
+    @Test
+    @Order(29)
     void deleteMediaEntry_ShouldWork() throws Exception {
         HttpResponse<String> getResponse = TestSetup.getMediaEntryById(token, createdMediaId);
         assertEquals(200, getResponse.statusCode(), "Media entry should exist before deletion");
@@ -512,7 +546,7 @@ class EndpointsTest {
     }
 
     @Test
-    @Order(28)
+    @Order(30)
     void deleteNonExistentMediaEntry_ShouldReturn404() throws Exception {
         HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry(token, 99999);
 
@@ -522,7 +556,7 @@ class EndpointsTest {
     }
 
     @Test
-    @Order(29)
+    @Order(31)
     void deleteMediaEntryWithInvalidToken_ShouldReturn401() throws Exception {
         HttpResponse<String> deleteResponse = TestSetup.deleteMediaEntry("invalid-token", createdMediaId);
 

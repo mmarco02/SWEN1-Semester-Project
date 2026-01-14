@@ -79,7 +79,7 @@ public class RatingsLikeHandler {
         Rating rating = ratingOpt.get();
 
         if(rating.getUserId() == user.getId()) {
-            sendResponse(exchange, HttpStatus.BAD_REQUEST.getCode(),
+            sendResponse(exchange, HttpStatus.FORBIDDEN.getCode(),
                     "Cannot like your own rating", "text/plain");
             return;
         }
