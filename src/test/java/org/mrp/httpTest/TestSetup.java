@@ -1,4 +1,4 @@
-package httpTest;
+package org.mrp.httpTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

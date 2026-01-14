@@ -21,23 +21,42 @@ public class RatingService {
     }
 
     public boolean updateRating(int ratingId, Integer stars, String comment, User editor) {
-        Optional<Rating> ratingOpt = ratingRepository.findById(ratingId);
-        if (ratingOpt.isEmpty()) {
+        if(stars == null) {
+            throw new IllegalArgumentException("stars cannot be null");
+        }
+
+        if (stars < 1 || stars > 5) {
+            throw new IllegalArgumentException("Star value must be between 1 and 5");
+        }
+
+        Optional<Rating> optionalRating = ratingRepository.findById(ratingId);
+        if (optionalRating.isEmpty()) {
             return false;
         }
 
-        Rating rating = ratingOpt.get();
+        Rating rating = optionalRating.get();
 
-        if(rating.getUserId() != editor.getId()) {
+        if (rating.getUserId() != editor.getId()) {
             return false;
         }
 
-        rating.setStarValue(stars);
-        rating.setComment(comment);
-        rating.setUpdatedAt(Timestamp.from(Instant.now()));
+        boolean updated = false;
 
-        ratingRepository.update(rating);
-        return true;
+        if (stars != null && stars != rating.getStarValue()) {
+            rating.setStarValue(stars);
+            updated = true;
+        }
+
+        if (comment != null && !comment.equals(rating.getComment())) {
+            rating.setComment(comment);
+            updated = true;
+        }
+
+        if (updated) {
+            ratingRepository.update(rating);
+        }
+
+        return updated;
     }
 
     public double calculateAverageRating(int entryId) {
