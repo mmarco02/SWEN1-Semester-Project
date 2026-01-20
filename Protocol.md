@@ -101,6 +101,9 @@ that are stored for the users when logging in
 so that I can use path variables (for example like Spring Controllers)
 #### AuthUtils <br>
 - Has Helper functions to get Bearer Token
+#### DateTimeUtil <br>
+- Function to convert Timestamp (for SQL Database) into LocalDateTime (for java) to make the code cleaner and not add
+another dependency in every class that uses Dates/Timestamps
 #### UserService
 - Contains functions to access CRUD operations in Repositories,
 create and validate Tokens and other utility methods.
