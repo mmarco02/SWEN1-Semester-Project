@@ -199,18 +199,45 @@ to set the Type of the ID for an Entity in my Repositories. <br>
 To Save the Genres for MediaEntries i use another Table calles MediaGenres which has a composite Primary key from the Entry Id and Genre
 
 ## Testing
-I wrote tests using an HttpClient to automatically test the API Endpoints that i have already implemented
-Its important to use the Order annotation so that the tests wait for one another and are executed chronologically, which usually would not be the case for unit tests.
-I also wrote a `TestSetup` Class in which i establish the connections and set up simple methods to access the Endpoints. <br>
-So far it tests: <br>
-- user register
-- user login
-- get profile
-- update profile
-- create media entry
-- update media entry
-- get media entry (with request params)
-- delete media entry
+I wrote about 60 Unit Tests to test the Media, Ratings, Users ans Utility/Service classes, all the main functionalities
+are being tested like creating/deleting/assigning etc. <br>
+I also wrote some Integration Tests for my Endpoints, which test the API and with that also the Repositories etc. 
+The TestSetup is there to handle the HTTP Requests<br>
+With integration tests there is a total of 96 Tests.
+Test Coverage is: <br>
+at about 90% for domain classes
+almost 100% for the Handlers
+at about 60 for most repositories
+and at 100% for utils and like 80% for Service classes
+
+
+## Version Control (git)
+I used git for version control and Github to upload the project, i have 2 branches master and dev, the dev branch is my working branch in which i develop new features <br>
+when a feature is done, i commit and push it, then i merge the dev branch into the master branch.
+This way i always have my code backed up, i can ammend commits to go back to an earlier version and i dont lose progress.
+The Link to the Github repo is in the README.md
+
+## SOLID Principles
+S (Single Responisibilty): <br>
+I have seperated my Classes into their respective functionalities, every type of dependencies or functionality that needs Utility/Helper functions has its own Class in /service/utils
+The Service classes are also seperated into their usage, so are the Repositories.
+The Handlers are only handling a few routes with a Main handler for every route that then splits that main route into the seperate ones
+<br> for example: main route /api/users; sub-route /api/users/{id}/profile; <br>
+Each Handler is named according to exactly what kind of endpoint it is.
+
+O (Open-Closed): <br>
+All Domain classes have builders, this way it is easy to add new Properties.
+The JsonObject class allows for more serialization options and apply it to every Class easily
+<br> With the Repository Interface and the BaseRepository it is easy to add new Reporitory types without having to modify anything
+
+L (Liskov-Subsitution): <br>
+All concrete Repositories could be replaced with the Interface they implement `Repository<T, ID> `
+The domain objects implement JsonObject and can be treated as one
+
+I (Interface Segregation): <br>
+For example Repository interface is simple and does not force the implementation of any functions that wouldnt be used
+
+
 
 ## Time Estimation
 
